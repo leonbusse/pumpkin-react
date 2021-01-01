@@ -1,25 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import "./App.css";
+import { globalState, GlobalStateContext } from "./state";
+import { LandingPage } from "./pages/Landing";
+import { SharePage } from "./pages/Share";
+import { CreateLinkPage } from "./pages/CreateLink";
+import { LinkCreatedPage } from "./pages/LinkCreated";
+import { SpotifyCallbackHandler } from "./pages/SpotifyCallbackHandler";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <GlobalStateContext.Provider value={globalState}>
+      <Routing />
+    </GlobalStateContext.Provider>
+  );
+}
+
+function Routing() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/share">
+          <SharePage />
+        </Route>
+        <Route path="/create-link">
+          <CreateLinkPage />
+        </Route>
+        <Route path="/link-created">
+          <LinkCreatedPage />
+        </Route>
+        <Route path="/spotify/callback">
+          <SpotifyCallbackHandler />
+        </Route>
+        <Route path="/">
+          <LandingPage />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
