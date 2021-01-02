@@ -1,6 +1,7 @@
 body {
   background-color: #282c34;
   color: white;
+  overflow: hidden;
 }
 
 a {
@@ -45,4 +46,35 @@ p {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.SongSwiper__card {
+  width: 400px;
+  height: 550px;
+  background-color: black;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.SongSwiper__card-image {
+  width: 400px;
+  height: 400px;
+  border-radius: 10px 10px 0 0;
+}
+
+.SongSwiper__card-description {
+  padding: 10px;
+}
+
+.SharePage__swipe-container {
+}
+
+.SharePage__swipe-cards-wrapper {
+  position: relative;
+}
+
+.SharePage__card-preview {
+  position: absolute;
+  top: 0;
+  z-index: -1;
 }

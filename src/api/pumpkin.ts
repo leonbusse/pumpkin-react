@@ -44,7 +44,28 @@ async function fetchUser(userId: string): Promise<SpotifyUser> {
   });
   const data = await response.json();
   console.log("response: ", data);
-  await sleep(3000);
+  return data;
+}
+
+async function likeTrack(
+  userId: string,
+  libraryUserId: string,
+  trackId: string
+) {
+  console.log("likeTrack " + trackId);
+  const url = `http://localhost:8080/api/v1/like`;
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: userId,
+      libraryUserId: libraryUserId,
+      trackIds: [trackId],
+    }),
+  });
+  const data = await response.text();
+  console.log("response: ", data);
   return data;
 }
 
@@ -81,7 +102,7 @@ interface SpotifyArtist {
   name: string;
 }
 
-export { ping, createShareLink, fetchTracks, fetchUser };
+export { ping, createShareLink, fetchTracks, fetchUser, likeTrack };
 export type {
   SpotifyAlbum,
   SpotifyArtist,
