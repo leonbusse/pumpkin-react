@@ -20,7 +20,7 @@ function Routing() {
   return (
     <Router>
       <Switch>
-        <Route path="/share">
+        <Route path="/share/:id">
           <SharePage />
         </Route>
         <Route path="/create-link">

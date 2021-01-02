@@ -1,3 +1,5 @@
+import { sleep } from "../util";
+
 async function ping() {
   console.log("ping...");
   return fetch("http://localhost:8080/api/v1/ping")
@@ -17,4 +19,73 @@ async function createShareLink(spotifyAccessToken: string): Promise<string> {
   return data.shareLink;
 }
 
-export { ping, createShareLink };
+async function fetchTracks(
+  userId: string,
+  offset: number,
+  limit: number
+): Promise<SpotifyTrack[]> {
+  console.log("fetchTracks...");
+  const url = `http://localhost:8080/api/v1/tracks/${userId}?offset=${offset}&limit=${limit}`;
+
+  const response = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+  });
+  const data = await response.json();
+  console.log("response: ", data);
+  return data;
+}
+
+async function fetchUser(userId: string): Promise<SpotifyUser> {
+  console.log("fetchUser...");
+  const url = `http://localhost:8080/api/v1/user/${userId}`;
+
+  const response = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+  });
+  const data = await response.json();
+  console.log("response: ", data);
+  await sleep(3000);
+  return data;
+}
+
+interface SpotifyTrack {
+  id: string;
+  name: string;
+  preview_url: string | null;
+  album: SpotifyAlbum;
+  artist: SpotifyArtist | null;
+}
+
+interface SpotifyUser {
+  id: string;
+  display_name: string;
+  email: string;
+  product: string;
+}
+
+interface SpotifyAlbum {
+  id: string;
+  name: string;
+  artists: SpotifyArtist[];
+  images: SpotifyImage[];
+}
+
+interface SpotifyImage {
+  url: string;
+  hieght: number;
+  width: number;
+}
+
+interface SpotifyArtist {
+  id: string;
+  name: string;
+}
+
+export { ping, createShareLink, fetchTracks, fetchUser };
+export type {
+  SpotifyAlbum,
+  SpotifyArtist,
+  SpotifyImage,
+  SpotifyTrack,
+  SpotifyUser,
+};
