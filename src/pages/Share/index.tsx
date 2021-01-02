@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   fetchTracks,
@@ -8,31 +8,29 @@ import {
   SpotifyUser,
 } from "../../api/pumpkin";
 import { Loading } from "../../components/Loading";
-import TinderCard from "react-tinder-card";
 import { SwipeCard } from "../../components/SwipeCard";
+import { SongSwiper } from "../../components/SongSwiper";
+import { PlayButton } from "../../components/PlayButton";
 
 interface SharePagePathParams {
   id: string;
 }
 
-function SharePage() {
+const SharePage: FC = () => {
   const { id } = useParams<SharePagePathParams>();
-  const [tracks, setTracks] = useState<SpotifyTrack[] | null>(null);
+  const { tracks, user } = useSharePageData(id);
+
   const [trackIndex, setTrackIndex] = useState<number>(0);
+  const [playing, setPlayling] = useState(false);
+  const audioPlayer = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    (async () => {
-      const tracks = await fetchTracks(id, 0, 100);
-      setTracks(tracks);
-    })();
-  }, [id]);
-  const [user, setUser] = useState<SpotifyUser | null>(null);
-  useEffect(() => {
-    (async () => {
-      const user = await fetchUser(id);
-      setUser(user);
-    })();
-  }, [id]);
+    if (audioPlayer && audioPlayer.current) {
+      if (playing) {
+        audioPlayer.current.play();
+      }
+    }
+  }, [trackIndex]);
 
   const onSwipe = (direction: string) => {
     console.log("onSwipe: " + direction);
@@ -46,18 +44,30 @@ function SharePage() {
     setTrackIndex(trackIndex + 1);
   };
 
+  const togglePlayback = () => {
+    if (audioPlayer && audioPlayer.current) {
+      if (audioPlayer.current.paused) {
+        audioPlayer.current.play();
+        setPlayling(true);
+      } else {
+        audioPlayer.current.pause();
+        setPlayling(false);
+      }
+    }
+  };
+
   return (
     <div className="App__container">
       <header>
         <h1>Pumpkin</h1>
       </header>
-      <section>
-        <Loading
-          predicate={() => tracks !== null && user !== null}
-          placeholder={() => <p>loading...</p>}
-        >
-          {tracks && (
-            <div className="SharePage__swipe-container">
+      <Loading
+        predicate={() => tracks !== null && user !== null}
+        placeholder={() => <p>loading...</p>}
+      >
+        {tracks && (
+          <>
+            <section className="SharePage__swipe-container">
               <h2>This is {user?.display_name}'s library</h2>
               <div className="SharePage__swipe-cards-wrapper">
                 <SongSwiper
@@ -69,36 +79,40 @@ function SharePage() {
                   <SwipeCard track={tracks[trackIndex + 1]} />
                 </div>
               </div>
-            </div>
-          )}
-        </Loading>
-        <br />
-        <Link to="/">Back</Link>
-      </section>
+              <audio
+                src={tracks[trackIndex].preview_url as string}
+                ref={audioPlayer}
+                onEnded={() => setPlayling(false)}
+              />
+              <PlayButton onClick={togglePlayback} playing={playing} />
+            </section>
+          </>
+        )}
+      </Loading>
+      <br />
+      <Link to="/">Back</Link>
     </div>
   );
-}
-
-interface SongSwiperProps {
-  track: SpotifyTrack;
-  onSwipe: (direction: string) => void;
-  onCardLeftScreen: (myIdentifier: string) => void;
-}
-const SongSwiper: FC<SongSwiperProps> = (props) => {
-  const { onSwipe, onCardLeftScreen, track } = props;
-
-  return (
-    <>
-      <TinderCard
-        onSwipe={onSwipe}
-        onCardLeftScreen={() => onCardLeftScreen(track.id)}
-        preventSwipe={["up", "down"]}
-        key={track.id}
-      >
-        <SwipeCard track={track} />
-      </TinderCard>
-    </>
-  );
 };
+
+function useSharePageData(id: string) {
+  const [tracks, setTracks] = useState<SpotifyTrack[] | null>(null);
+  useEffect(() => {
+    (async () => {
+      const tracks = await fetchTracks(id, 0, 100);
+      setTracks(tracks);
+    })();
+  }, [id]);
+
+  const [user, setUser] = useState<SpotifyUser | null>(null);
+  useEffect(() => {
+    (async () => {
+      const user = await fetchUser(id);
+      setUser(user);
+    })();
+  }, [id]);
+
+  return { user, tracks };
+}
 
 export { SharePage };

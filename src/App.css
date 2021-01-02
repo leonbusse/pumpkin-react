@@ -21,6 +21,10 @@ p {
   font-size: calc(10px + 1vmin);
 }
 
+button:focus {
+  outline: white solid 1px;
+}
+
 .LandingPage__container {
   min-height: 100vh;
   display: flex;
@@ -67,14 +71,50 @@ p {
 }
 
 .SharePage__swipe-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 2em;
 }
 
 .SharePage__swipe-cards-wrapper {
   position: relative;
+  padding-bottom: 2em;
 }
 
 .SharePage__card-preview {
   position: absolute;
   top: 0;
   z-index: -1;
+}
+
+.PlayButton__wrapper {
+  margin-left: 24px;
+  min-height: 80px;
+}
+
+.PlayButton__button {
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+  width: 0;
+  height: 74px;
+
+  border-color: transparent transparent transparent white;
+  transition: 100ms all ease;
+  cursor: pointer;
+
+  border-style: solid;
+  border-width: 37px 0 37px 60px;
+}
+
+.PlayButton__button.paused {
+  border-style: double;
+  border-width: 0px 0 0px 60px;
+}
+
+.PlayButton:hover {
+  border-color: transparent transparent transparent gray;
 }
