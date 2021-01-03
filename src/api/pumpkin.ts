@@ -40,7 +40,7 @@ async function fetchTracks(
 }
 
 async function fetchUser(userId: string): Promise<SpotifyUser> {
-  console.log("fetchUser...");
+  console.log(`fetchUser ${userId}...`);
   const url = `${pumpkinEndpoint}api/v1/user/${userId}`;
 
   const response = await fetch(url, {

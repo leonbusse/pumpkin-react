@@ -21,7 +21,7 @@ function getSpotifyLoginUrl(destination?: string | undefined) {
 }
 
 async function fetchLoggedInUser(accessToken: string): Promise<SpotifyUser> {
-  console.log("fetch Spotify user...");
+  console.log("fetch logged in Spotify user...");
   const url = "https://api.spotify.com/v1/me";
 
   const response = await fetch(url, {
@@ -31,7 +31,7 @@ async function fetchLoggedInUser(accessToken: string): Promise<SpotifyUser> {
     },
   });
   const data = await response.json();
-  console.log("response: ", data);
+  console.log("logged in Spotify user response: ", data);
   if (data.error) {
     throw Error(JSON.stringify(data.error));
   }

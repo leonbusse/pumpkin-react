@@ -14,8 +14,9 @@ import { SongSwiper } from "../../components/SongSwiper";
 import { PlayButton } from "../../components/PlayButton";
 import { PlusButton } from "../../components/PlusButton";
 import { GlobalStateContext } from "../../state";
-import { CustomDialog } from "react-st-modal";
+import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
+import { fetchLoggedInUser } from "../../api/spotify";
 
 interface SharePagePathParams {
   id: string;
@@ -23,30 +24,41 @@ interface SharePagePathParams {
 
 const SharePage: FC = () => {
   const { id: libraryUserId } = useParams<SharePagePathParams>();
-  const { tracks, user, error } = useSharePageData(libraryUserId);
   const spotifyAccessToken = useContext(GlobalStateContext).spotify.accessToken;
-  const userId = useContext(GlobalStateContext).spotify.user?.id;
 
   const [trackIndex, setTrackIndex] = useState<number>(0);
   const [playing, setPlayling] = useState(false);
   const [done, setDone] = useState(false);
   const audioPlayer = useRef<HTMLAudioElement>(null);
 
+  const {
+    userId,
+    tracks,
+    libraryUser,
+    ratedAllTracks,
+    error,
+  } = useSharePageData(libraryUserId, trackIndex);
+
+  const currentTrack = tracks && tracks[trackIndex];
+  const nextTrack = tracks && tracks[trackIndex + 1];
+
+  // TODO: control player via useEffect only
   useEffect(() => {
     if (audioPlayer && audioPlayer.current) {
       if (playing) {
         audioPlayer.current.play();
+      } else {
+        audioPlayer.current.pause();
       }
     }
-  }, [trackIndex]);
+  }, [trackIndex, playing]);
 
   const onSwipe = (direction: string) => {
     console.log("onSwipe: " + direction);
-    if (direction === "right") {
-      userId &&
-        libraryUserId &&
-        tracks &&
-        likeTrack(userId, libraryUserId, tracks[trackIndex].id);
+    if (direction === "right" && userId && libraryUserId && currentTrack) {
+      likeTrack(userId, libraryUserId, currentTrack.id);
+    } else {
+      console.log("onSwipe: ", userId, libraryUserId, currentTrack);
     }
   };
 
@@ -58,10 +70,8 @@ const SharePage: FC = () => {
   const togglePlayback = () => {
     if (audioPlayer && audioPlayer.current) {
       if (audioPlayer.current.paused) {
-        audioPlayer.current.play();
         setPlayling(true);
       } else {
-        audioPlayer.current.pause();
         setPlayling(false);
       }
     }
@@ -79,10 +89,10 @@ const SharePage: FC = () => {
     }
   };
 
-  const onButtonDone = async () => {
+  const onButtonDone = async (closable?: boolean) => {
     const playlistName = await CustomDialog(<CreatePlaylistDialogContent />, {
       title: "Create Playlist",
-      showCloseIcon: true,
+      showCloseIcon: closable || true,
     });
     if (playlistName && typeof playlistName === "string") {
       onCreatePlaylist(playlistName);
@@ -103,32 +113,54 @@ const SharePage: FC = () => {
     return <Redirect to="/playlist-created" />;
   }
 
+  if (ratedAllTracks) {
+    // TODO: only if there are liked tracks, else there are no tracks, so cancel everything
+    return (
+      <StaticDialog
+        isOpen={true}
+        title="Create Playlist"
+        onAfterClose={(playlistName) => {
+          if (playlistName && typeof playlistName === "string") {
+            onCreatePlaylist(playlistName);
+          }
+        }}
+      >
+        <CreatePlaylistDialogContent />
+      </StaticDialog>
+    );
+  }
+
+  console.log("render: ", userId, libraryUserId, currentTrack);
   return (
     <div className="App__container">
       <header>
         <h1>Pumpkin</h1>
       </header>
       <Loading
-        condition={() => tracks !== null && user !== null}
+        condition={() =>
+          currentTrack && userId && libraryUser && libraryUserId ? true : false
+        }
         placeholder={() => <p>Loading...</p>}
         error={() => error}
       >
-        {user && tracks && (
+        {currentTrack && userId && libraryUser && libraryUserId && (
           <>
             <section className="SharePage__swipe-container">
-              <h2>This is {user.display_name}'s library</h2>
+              <h2>This is {libraryUser.display_name}'s library</h2>
               <div className="SharePage__swipe-cards-wrapper">
                 <SongSwiper
-                  track={tracks[trackIndex]}
+                  track={currentTrack}
                   onSwipe={onSwipe}
                   onCardLeftScreen={onCardLeftScreen}
                 />
-                <div className="SharePage__card-preview">
-                  <SwipeCard track={tracks[trackIndex + 1]} />
-                </div>
+                {nextTrack && (
+                  <div className="SharePage__card-preview">
+                    <SwipeCard track={nextTrack} />
+                  </div>
+                )}
               </div>
               <audio
-                src={tracks[trackIndex].preview_url as string}
+                src={currentTrack.preview_url as string}
                 ref={audioPlayer}
                 onEnded={() => setPlayling(false)}
               />
@@ -147,33 +179,120 @@ const SharePage: FC = () => {
   );
 };
 
-function useSharePageData(id: string) {
-  const [tracks, setTracks] = useState<SpotifyTrack[] | null>(null);
-  const [error, setError] = useState(null);
-  useEffect(() => {
-    (async () => {
-      try {
-        const tracks = await fetchTracks(id, 0, 100);
-        setTracks(tracks);
-      } catch (e) {
-        setError(e);
-      }
-    })();
-  }, [id]);
+function useSharePageData(libraryUserId: string, trackIndex: number) {
+  const { user, error: userError } = useLoggedInUser();
 
+  const { user: libraryUser, error: libraryUserError } = useUserData(
+    libraryUserId
+  );
+
+  const { tracks, ratedAllTracks, error: trackError } = useTrackPagination(
+    libraryUserId,
+    trackIndex
+  );
+
+  return {
+    userId: user?.id,
+    libraryUser,
+    tracks,
+    ratedAllTracks,
+    error: userError || libraryUserError || trackError,
+  };
+}
+
+function useUserData(userId: string) {
+  const [error, setError] = useState(null);
   const [user, setUser] = useState<SpotifyUser | null>(null);
+
   useEffect(() => {
     (async () => {
       try {
-        const user = await fetchUser(id);
+        const user = await fetchUser(userId);
         setUser(user);
       } catch (e) {
         setError(e);
       }
     })();
-  }, [id]);
+  }, [userId]);
 
-  return { user, tracks, error };
+  return { user, error };
+}
+
+function useLoggedInUser() {
+  const [error, setError] = useState<Error | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const { user, accessToken } = useContext(GlobalStateContext).spotify;
+  const setSpotifyState = useContext(GlobalStateContext).setSpotifyState;
+  useEffect(() => {
+    (async () => {
+      if (!fetching && !user) {
+        if (accessToken) {
+          setFetching(true);
+          const loggedInUser = await fetchLoggedInUser(accessToken);
+          setSpotifyState({ user: loggedInUser });
+          setError(null);
+          setFetching(false);
+        } else {
+          setError(Error("no access token available to fetch user"));
+        }
+      }
+    })();
+  }, [user, accessToken, fetching, setSpotifyState]);
+  return { user, error };
+}
+
+function useTrackPagination(libraryUserId: string, trackIndex: number) {
+  const [error, setError] = useState(null);
+  const [tracks, setTracks] = useState<Record<number, SpotifyTrack>>({});
+  const [fetchedAllTracks, setFetchedAllTracks] = useState(false);
+  const [fetchingTracks, setFetchingTracks] = useState(false);
+
+  const availableIndecies = Object.keys(tracks);
+  const lastAvailableIndex =
+    availableIndecies.length > 0
+      ? Math.max(...availableIndecies.map((k) => parseInt(k, 10)))
+      : -1;
+
+  useEffect(() => {
+    (async () => {
+      if (
+        !fetchedAllTracks &&
+        !fetchingTracks &&
+        lastAvailableIndex - trackIndex <= 2
+      ) {
+        try {
+          setFetchingTracks(true);
+          const fetchIndex = lastAvailableIndex + 1;
+          const newTracks = await fetchTracks(libraryUserId, fetchIndex, 3);
+          if (newTracks.length === 0) {
+            setFetchedAllTracks(true);
+            return;
+          }
+          const newTracksRecord: Record<number, SpotifyTrack> = {};
+          newTracks.forEach((t: SpotifyTrack, i: number) => {
+            newTracksRecord[fetchIndex + i] = t;
+          });
+          const updatedTracks: Record<number, SpotifyTrack> = {
+            ...tracks,
+            ...newTracksRecord,
+          };
+          setTracks(updatedTracks);
+          setFetchingTracks(false);
+        } catch (e) {
+          setError(e);
+        }
+      }
+    })();
+  }, [
+    libraryUserId,
+    trackIndex,
+    tracks,
+    fetchingTracks,
+    fetchedAllTracks,
+    lastAvailableIndex,
+  ]);
+  const ratedAllTracks = fetchedAllTracks && trackIndex > lastAvailableIndex;
+  return { tracks, ratedAllTracks, error };
 }
 
 export { SharePage };
