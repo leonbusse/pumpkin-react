@@ -1,4 +1,5 @@
 import React from "react";
+import { SpotifyUser } from "./api/pumpkin";
 
 interface GlobalState {
   spotify: SpotifyState;
@@ -9,6 +10,7 @@ interface GlobalState {
 
 interface SpotifyState {
   accessToken: string | null;
+  user: SpotifyUser | null;
 }
 
 interface PumpkinState {
@@ -18,15 +20,19 @@ interface PumpkinState {
 const globalState: GlobalState = {
   spotify: {
     accessToken: null,
+    user: null,
   },
   setSpotifyState: (s: any) => {
-    globalState.spotify = { ...globalState, ...s };
+    globalState.spotify = { ...globalState.spotify, ...s };
+    // console.log(
+    //   `updated spotify state: ` + JSON.stringify(globalState.spotify)
+    // );
   },
   pumpkin: {
     shareLink: null,
   },
   setPumpkinState: (s: any) => {
-    globalState.pumpkin = { ...globalState, ...s };
+    globalState.pumpkin = { ...globalState.pumpkin, ...s };
   },
 };
 const GlobalStateContext = React.createContext(globalState);

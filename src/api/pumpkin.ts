@@ -1,22 +1,26 @@
-import { sleep } from "../util";
+const pumpkinEndpoint = process.env.REACT_APP_PUMPKIN_ENDPOINT;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 async function ping() {
   console.log("ping...");
-  return fetch("http://localhost:8080/api/v1/ping")
+  return fetch(`${pumpkinEndpoint}api/v1/ping`)
     .then((response) => response.text())
     .then((data) => console.log("response: " + data));
 }
 
 async function createShareLink(spotifyAccessToken: string): Promise<string> {
   console.log("createShareLink...");
-  const response = await fetch("http://localhost:8080/api/v1/import", {
+  const response = await fetch(`${pumpkinEndpoint}api/v1/import`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ spotifyAccessToken: spotifyAccessToken }),
   });
   const data = await response.json();
   console.log("response: ", data);
-  return data.shareLink;
+  if (data.error) {
+    throw Error(JSON.stringify(data.error));
+  }
+  return baseUrl + `share/${data.shareId}`;
 }
 
 async function fetchTracks(
@@ -25,10 +29,10 @@ async function fetchTracks(
   limit: number
 ): Promise<SpotifyTrack[]> {
   console.log("fetchTracks...");
-  const url = `http://localhost:8080/api/v1/tracks/${userId}?offset=${offset}&limit=${limit}`;
+  const url = `${pumpkinEndpoint}api/v1/tracks/${userId}?offset=${offset}&limit=${limit}`;
 
   const response = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
   });
   const data = await response.json();
   console.log("response: ", data);
@@ -37,13 +41,16 @@ async function fetchTracks(
 
 async function fetchUser(userId: string): Promise<SpotifyUser> {
   console.log("fetchUser...");
-  const url = `http://localhost:8080/api/v1/user/${userId}`;
+  const url = `${pumpkinEndpoint}api/v1/user/${userId}`;
 
   const response = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
   });
   const data = await response.json();
   console.log("response: ", data);
+  if (data.error) {
+    throw Error(JSON.stringify(data.error));
+  }
   return data;
 }
 
@@ -53,11 +60,11 @@ async function likeTrack(
   trackId: string
 ) {
   console.log("likeTrack " + trackId);
-  const url = `http://localhost:8080/api/v1/like`;
+  const url = `${pumpkinEndpoint}api/v1/like`;
 
   const response = await fetch(url, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
       userId: userId,
       libraryUserId: libraryUserId,
@@ -65,7 +72,34 @@ async function likeTrack(
     }),
   });
   const data = await response.text();
+  if (!response.ok) {
+    throw Error(`server status code: ${response.status}`);
+  }
+  return data;
+}
+
+async function createPlaylist(
+  userId: string,
+  libraryUserId: string,
+  playlistName: string,
+  spotifyAccessToken: string
+): Promise<string> {
+  console.log("createPlaylist...");
+  const response = await fetch(`${pumpkinEndpoint}api/v1/create-playlist`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      spotifyAccessToken: spotifyAccessToken,
+      userId: userId,
+      libraryUserId: libraryUserId,
+      playlistName: playlistName,
+    }),
+  });
+  const data = await response.json();
   console.log("response: ", data);
+  if (data.error) {
+    throw Error(JSON.stringify(data.error));
+  }
   return data;
 }
 
@@ -102,7 +136,14 @@ interface SpotifyArtist {
   name: string;
 }
 
-export { ping, createShareLink, fetchTracks, fetchUser, likeTrack };
+export {
+  ping,
+  createShareLink,
+  fetchTracks,
+  fetchUser,
+  likeTrack,
+  createPlaylist,
+};
 export type {
   SpotifyAlbum,
   SpotifyArtist,

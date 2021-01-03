@@ -7,6 +7,8 @@ interface SwipeCardProps {
 
 const SwipeCard: FC<SwipeCardProps> = (props) => {
   const { track } = props;
+  const trackName =
+    track.name.length > 70 ? track.name.substr(0, 75) + " ..." : track.name;
   return (
     <div className="SongSwiper__card">
       <div
@@ -17,8 +19,10 @@ const SwipeCard: FC<SwipeCardProps> = (props) => {
         }}
       />
       <div className="SongSwiper__card-description">
-        <p>{track.name}</p>
-        {track.album.artists[0] && <h3>by {track.album.artists[0].name}</h3>}
+        <p>{trackName}</p>
+        {track.album.artists[0] && (
+          <h3>{track.album.artists.map((a) => a.name).join(", ")}</h3>
+        )}
         {/* {track.preview_url && <a href={track.preview_url || ""}>Listen</a>} */}
       </div>
     </div>

@@ -24,7 +24,7 @@ function CreateLinkPage() {
     console.error("no Spotify accessToken available");
     return (
       <>
-        <Redirect to="/" />
+        <Redirect to="/login" />
       </>
     );
   }

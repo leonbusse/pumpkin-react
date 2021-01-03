@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
 import { globalState, GlobalStateContext } from "./state";
@@ -7,6 +7,8 @@ import { SharePage } from "./pages/Share";
 import { CreateLinkPage } from "./pages/CreateLink";
 import { LinkCreatedPage } from "./pages/LinkCreated";
 import { SpotifyCallbackHandler } from "./pages/SpotifyCallbackHandler";
+import { SpotifyLogin } from "./pages/SpotifyLogin";
+import { PlaylistCreatedPage } from "./pages/PlaylistCreated";
 
 function App() {
   return (
@@ -16,7 +18,16 @@ function App() {
   );
 }
 
-function Routing() {
+const Routing: FC = () => {
+  console.log("location.href: " + window.location.href);
+  const splits = window.location.href.split("?", 2);
+  console.log(splits);
+  const destination = splits[1]
+    ?.split("&")
+    ?.find((param) => param.startsWith("destination"))
+    ?.split("=")[1];
+  console.log("destination: " + destination);
+
   return (
     <Router>
       <Switch>
@@ -29,6 +40,10 @@ function Routing() {
         <Route path="/link-created">
           <LinkCreatedPage />
         </Route>
+        <Route path="/playlist-created">
+          <PlaylistCreatedPage />
+        </Route>
+        <Route path="/login" component={SpotifyLogin}></Route>
         <Route path="/spotify/callback">
           <SpotifyCallbackHandler />
         </Route>
@@ -38,6 +53,6 @@ function Routing() {
       </Switch>
     </Router>
   );
-}
+};
 
 export default App;
