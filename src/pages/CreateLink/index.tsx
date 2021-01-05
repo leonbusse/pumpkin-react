@@ -10,14 +10,14 @@ function CreateLinkPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function a() {
+    (async () => {
       if (spotifyState.accessToken) {
         const shareLink = await createShareLink(spotifyState.accessToken);
         setPumpkinState({ shareLink: shareLink });
         setLoading(false);
       }
-    }
-    a();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!spotifyState.accessToken) {
