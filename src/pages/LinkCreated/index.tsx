@@ -21,9 +21,7 @@ function LinkCreatedPage() {
   const copyLink = () => {
     navigator.clipboard.writeText(shareLink);
     setCopied(true);
-    console.log("setCopied called");
   };
-  console.log("copied: ", copied);
 
   return (
     <BasePage>

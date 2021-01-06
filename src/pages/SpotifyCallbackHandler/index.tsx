@@ -1,10 +1,11 @@
 import { useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { fetchLoggedInUser } from "../../api/spotify";
-import { GlobalStateContext, SpotifyState } from "../../state";
+import { globalSetters, GlobalStateContext, SpotifyState } from "../../state";
 
 function SpotifyCallbackHandler() {
-  const setSpotifyState = useContext(GlobalStateContext).setSpotifyState;
+  console.error("SpotifyCallbackHandler");
+  const { setSpotifyState } = globalSetters;
   const spotifyState: SpotifyState = useContext(GlobalStateContext).spotify;
   const spotifyAccessToken = window.location.hash
     .split("access_token=")[1]
@@ -16,7 +17,7 @@ function SpotifyCallbackHandler() {
     ?.split("=")[1];
   let destination =
     encodedDestination && decodeURIComponent(encodedDestination);
-  console.log("destination: " + destination);
+
   if (destination === "undefined") {
     destination = undefined;
   }

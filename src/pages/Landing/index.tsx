@@ -15,7 +15,7 @@ function LandingPage() {
       height="100vh"
     >
       <Box as="section" maxW="32rem" textAlign="center" maxWidth="80vw">
-        <Heading mb={4} as="h1" size="4xl">
+        <Heading mb={4} size="4xl">
           Pumpkin
         </Heading>
         <Text fontSize="3xl">Share your Spotify library with friends</Text>

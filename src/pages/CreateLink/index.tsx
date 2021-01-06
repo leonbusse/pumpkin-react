@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { Flex, Heading } from "@chakra-ui/react";
 import { Redirect } from "react-router-dom";
 import { createShareLink } from "../../api/pumpkin";
-import { GlobalStateContext, SpotifyState } from "../../state";
+import { globalSetters, GlobalStateContext, SpotifyState } from "../../state";
 import { BasePage } from "../../components/BasePage";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 function CreateLinkPage() {
   const globalState = useContext(GlobalStateContext);
   const spotifyState: SpotifyState = globalState.spotify;
-  const setPumpkinState = globalState.setPumpkinState;
+  const { setPumpkinState } = globalSetters;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

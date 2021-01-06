@@ -19,7 +19,7 @@ const BasePage: FC<PropsWithChildren<{}>> = (props) => {
         paddingBottom={{ base: ".25", md: ".5em" }}
         borderBottom="3px solid #000"
       >
-        <Heading marginLeft="10px" size="2xl">
+        <Heading as="a" href="/" marginLeft="10px" size="2xl">
           Pumpkin
         </Heading>
       </Flex>

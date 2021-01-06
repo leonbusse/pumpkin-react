@@ -13,7 +13,7 @@ import { SwipeCard } from "../../components/SwipeCard";
 import { SongSwiper } from "../../components/SongSwiper";
 import { PlayButton } from "../../components/PlayButton";
 import { PlusButton } from "../../components/PlusButton";
-import { GlobalStateContext } from "../../state";
+import { globalSetters, GlobalStateContext } from "../../state";
 import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
 import { fetchLoggedInUser } from "../../api/spotify";
@@ -57,16 +57,13 @@ const SharePage: FC = () => {
   }, [trackIndex, playing]);
 
   const onSwipe = (direction: string) => {
-    console.log("onSwipe: " + direction);
     if (direction === "right" && userId && libraryUserId && currentTrack) {
       likeTrack(userId, libraryUserId, currentTrack.id);
     } else {
-      console.log("onSwipe: ", userId, libraryUserId, currentTrack);
     }
   };
 
   const onCardLeftScreen = async (myIdentifier: string) => {
-    console.log("onCardLeftScreen: " + myIdentifier);
     setTrackIndex(trackIndex + 1);
   };
 
@@ -82,7 +79,6 @@ const SharePage: FC = () => {
 
   const onCreatePlaylist = (playlistName: string) => {
     if (spotifyAccessToken && userId) {
-      console.log("onCreatePlaylist");
       createPlaylist(userId, libraryUserId, playlistName, spotifyAccessToken);
       setDone(true);
     } else {
@@ -133,7 +129,6 @@ const SharePage: FC = () => {
     );
   }
 
-  console.log("render: ", userId, libraryUserId, currentTrack);
   return (
     <BasePage>
       <Flex
@@ -237,7 +232,7 @@ function useLoggedInUser() {
   const [error, setError] = useState<Error | null>(null);
   const [fetching, setFetching] = useState(false);
   const { user, accessToken } = useContext(GlobalStateContext).spotify;
-  const setSpotifyState = useContext(GlobalStateContext).setSpotifyState;
+  const { setSpotifyState } = globalSetters;
   useEffect(() => {
     (async () => {
       if (!fetching && !user) {

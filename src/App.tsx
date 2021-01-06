@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { globalState, GlobalStateContext } from "./state";
+import { GlobalStateContext, globalState } from "./state";
 import { LandingPage } from "./pages/Landing";
 import { SharePage } from "./pages/Share";
 import { CreateLinkPage } from "./pages/CreateLink";
@@ -27,15 +27,6 @@ function App() {
 }
 
 const Routing: FC = () => {
-  console.log("location.href: " + window.location.href);
-  const splits = window.location.href.split("?", 2);
-  console.log(splits);
-  const destination = splits[1]
-    ?.split("&")
-    ?.find((param) => param.startsWith("destination"))
-    ?.split("=")[1];
-  console.log("destination: " + destination);
-
   return (
     <Router>
       <Switch>
