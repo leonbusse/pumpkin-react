@@ -10,7 +10,7 @@ export function CreatePlaylistDialogContent() {
 
   // TODO: Enter does not work
   return (
-    <Grid padding="2em" rowGap="2em" justifyItems="center">
+    <Grid as="form" padding="2em" rowGap="2em" justifyItems="center">
       <TextInput
         label="Playlist Name"
         onChange={(e: any) => {
@@ -18,6 +18,7 @@ export function CreatePlaylistDialogContent() {
         }}
       />
       <Button
+        type="submit"
         lineHeight="1.2"
         fontWeight="600"
         height="3rem"
