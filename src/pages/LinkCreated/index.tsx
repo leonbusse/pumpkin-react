@@ -1,4 +1,4 @@
-import { Flex, Heading, Text, Spacer, Box } from "@chakra-ui/react";
+import { Flex, Heading, Text, Box } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { BasePage } from "../../components/BasePage";

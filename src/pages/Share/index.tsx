@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef, useContext } from "react";
-import { Link, Redirect, useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import {
   fetchTracks,
   fetchUser,
@@ -17,7 +17,7 @@ import { GlobalStateContext } from "../../state";
 import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
 import { fetchLoggedInUser } from "../../api/spotify";
-import { Box, Flex, Heading, Spacer, Text } from "@chakra-ui/react";
+import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { BasePage } from "../../components/BasePage";
 import "./style.css";
 

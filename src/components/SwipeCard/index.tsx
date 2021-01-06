@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { SpotifyTrack } from "../../api/pumpkin";
-import { Box, Flex, Grid, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Grid, Text } from "@chakra-ui/react";
 
 interface SwipeCardProps {
   track: SpotifyTrack;

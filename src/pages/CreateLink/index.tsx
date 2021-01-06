@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Flex, Heading, Text, Spacer, Box } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import { Redirect } from "react-router-dom";
 import { createShareLink } from "../../api/pumpkin";
 import { GlobalStateContext, SpotifyState } from "../../state";
