@@ -1,4 +1,5 @@
-import { FC, PropsWithChildren } from "react";
+import React, { FC, PropsWithChildren } from "react";
+import LoadingSpinner from "../LoadingSpinner";
 
 interface LoadingProps {
   condition: () => boolean;
@@ -34,7 +35,7 @@ const Loading: FC<PropsWithChildren<LoadingProps>> = (
   return condition() ? (
     <>{children} </>
   ) : (
-    (Placeholder && <Placeholder />) || <p>Loading...</p>
+    (Placeholder && <Placeholder />) || <LoadingSpinner />
   );
 };
 

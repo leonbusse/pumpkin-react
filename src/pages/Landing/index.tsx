@@ -1,29 +1,35 @@
 import React, { useContext } from "react";
 import { getSpotifyLoginUrl } from "../../api/spotify";
 import { GlobalStateContext } from "../../state";
+import { Button } from "../../components/Button";
+import { Text, Heading, Box, Flex, Spacer } from "@chakra-ui/react";
 
 function LandingPage() {
   const spotifyState = useContext(GlobalStateContext).spotify;
 
   return (
-    <div className="LandingPage__container">
-      <header>
-        <h1>Pumpkin</h1>
-        <h2>Share your Spotify library with friends.</h2>
-      </header>
-      <section>
-        <p>
-          <a
-            href={
-              spotifyState.accessToken ? "/create-link" : getSpotifyLoginUrl()
-            }
-          >
-            Generate
-          </a>
-          {" your link to get started."}
-        </p>
-      </section>
-    </div>
+    <Flex
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+    >
+      <Box as="section" maxW="32rem" textAlign="center" maxWidth="80vw">
+        <Heading mb={4} as="h1" size="4xl">
+          Pumpkin
+        </Heading>
+        <Text fontSize="3xl">Share your Spotify library with friends</Text>
+        <Spacer height="3em" />
+        <Button
+          as="a"
+          href={
+            spotifyState.accessToken ? "/create-link" : getSpotifyLoginUrl()
+          }
+        >
+          Share
+        </Button>
+      </Box>
+    </Flex>
   );
 }
 

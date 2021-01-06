@@ -1,17 +1,34 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Button } from "../../components/Button";
+import { BasePage } from "../../components/BasePage";
 
 function PlaylistCreatedPage() {
   return (
-    <div className="App__container">
-      <header>
-        <h1>Pumpkin</h1>
-        <h2>A playlist has been created in your Spotify library.</h2>
-      </header>
-      <section>
-        <Link to="/">Back</Link>
-      </section>
-    </div>
+    <BasePage>
+      <Flex
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        as="section"
+      >
+        <Heading
+          size="xl"
+          borderBottom="3px solid #000"
+          paddingBottom="4px"
+          marginBottom=".5em"
+        >
+          A playlist has been created
+        </Heading>
+        <Text fontSize="xl" marginBottom="2em">
+          Have at look at your Spotify library!
+        </Text>
+        <Button as="a" href="/" width="8em" height="2.6em">
+          Back
+        </Button>
+      </Flex>
+    </BasePage>
   );
 }
 

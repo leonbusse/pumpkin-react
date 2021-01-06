@@ -1,5 +1,5 @@
 import { FC } from "react";
-
+import "./style.css";
 interface PlayButtonProps {
   playing: boolean;
   onClick: () => void;

@@ -17,6 +17,9 @@ import { GlobalStateContext } from "../../state";
 import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
 import { fetchLoggedInUser } from "../../api/spotify";
+import { Box, Flex, Heading, Spacer, Text } from "@chakra-ui/react";
+import { BasePage } from "../../components/BasePage";
+import "./style.css";
 
 interface SharePagePathParams {
   id: string;
@@ -132,50 +135,62 @@ const SharePage: FC = () => {
 
   console.log("render: ", userId, libraryUserId, currentTrack);
   return (
-    <div className="App__container">
-      <header>
-        <h1>Pumpkin</h1>
-      </header>
-      <Loading
-        condition={() =>
-          currentTrack && userId && libraryUser && libraryUserId ? true : false
-        }
-        placeholder={() => <p>Loading...</p>}
-        error={() => error}
+    <BasePage>
+      <Flex
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
       >
-        {currentTrack && userId && libraryUser && libraryUserId && (
-          <>
-            <section className="SharePage__swipe-container">
-              <h2>This is {libraryUser.display_name}'s library</h2>
-              <div className="SharePage__swipe-cards-wrapper">
-                <SongSwiper
-                  track={currentTrack}
-                  onSwipe={onSwipe}
-                  onCardLeftScreen={onCardLeftScreen}
+        <Loading
+          condition={() =>
+            currentTrack && userId && libraryUser && libraryUserId
+              ? true
+              : false
+          }
+          error={() => error}
+        >
+          {currentTrack && userId && libraryUser && libraryUserId && (
+            <>
+              <Text
+                width="100%"
+                paddingLeft="10px"
+                fontSize="2xl"
+                marginTop=".25em"
+              >
+                Viewing {libraryUser.display_name}'s library
+              </Text>
+              <Spacer />
+              <Box as="section" className="SharePage__swipe-container">
+                <div className="SharePage__swipe-cards-wrapper">
+                  <SongSwiper
+                    track={currentTrack}
+                    onSwipe={onSwipe}
+                    onCardLeftScreen={onCardLeftScreen}
+                  />
+                  {nextTrack && (
+                    <div className="SharePage__card-preview">
+                      <SwipeCard track={nextTrack} />
+                    </div>
+                  )}
+                </div>
+                <audio
+                  src={currentTrack.preview_url as string}
+                  ref={audioPlayer}
+                  onEnded={() => setPlayling(false)}
                 />
-                {nextTrack && (
-                  <div className="SharePage__card-preview">
-                    <SwipeCard track={nextTrack} />
-                  </div>
-                )}
-              </div>
-              <audio
-                src={currentTrack.preview_url as string}
-                ref={audioPlayer}
-                onEnded={() => setPlayling(false)}
-              />
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <PlayButton onClick={togglePlayback} playing={playing} />
-                <div style={{ width: 60 }} />
-                <PlusButton onClick={onButtonDone} />
-              </div>
-            </section>
-          </>
-        )}
-      </Loading>
-      <br />
-      <Link to="/">Back</Link>
-    </div>
+                <Flex flexDirection="row">
+                  <PlayButton onClick={togglePlayback} playing={playing} />
+                  <Box width="60px" />
+                  <PlusButton onClick={onButtonDone} />
+                </Flex>
+              </Box>
+              <Spacer />
+            </>
+          )}
+        </Loading>
+      </Flex>
+    </BasePage>
   );
 };
 

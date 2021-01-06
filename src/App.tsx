@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import "./App.css";
 import { globalState, GlobalStateContext } from "./state";
 import { LandingPage } from "./pages/Landing";
 import { SharePage } from "./pages/Share";
@@ -9,11 +8,20 @@ import { LinkCreatedPage } from "./pages/LinkCreated";
 import { SpotifyCallbackHandler } from "./pages/SpotifyCallbackHandler";
 import { SpotifyLogin } from "./pages/SpotifyLogin";
 import { PlaylistCreatedPage } from "./pages/PlaylistCreated";
+import { ChakraProvider } from "@chakra-ui/react";
+import { extendTheme } from "@chakra-ui/react";
+
+const colors = {
+  colorAccent: "#1DB954",
+};
+const theme = extendTheme({ colors });
 
 function App() {
   return (
     <GlobalStateContext.Provider value={globalState}>
-      <Routing />
+      <ChakraProvider theme={theme} resetCSS>
+        <Routing />
+      </ChakraProvider>
     </GlobalStateContext.Provider>
   );
 }

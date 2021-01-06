@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Flex, Heading, Text, Spacer, Box } from "@chakra-ui/react";
 import { Redirect } from "react-router-dom";
 import { createShareLink } from "../../api/pumpkin";
 import { GlobalStateContext, SpotifyState } from "../../state";
+import { BasePage } from "../../components/BasePage";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function CreateLinkPage() {
   const globalState = useContext(GlobalStateContext);
@@ -33,12 +36,25 @@ function CreateLinkPage() {
     return <Redirect to="/link-created" />;
   }
   return (
-    <div className="App__container">
-      <header>
-        <h1>Pumpkin</h1>
-        <h2>Your link is being generated...</h2>
-      </header>
-    </div>
+    <BasePage>
+      <Flex
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        as="section"
+      >
+        <Heading
+          size="xl"
+          borderBottom="3px solid #000"
+          paddingBottom="4px"
+          marginBottom="1.5em"
+        >
+          Your link is being created...
+        </Heading>
+        <LoadingSpinner />
+      </Flex>
+    </BasePage>
   );
 }
 

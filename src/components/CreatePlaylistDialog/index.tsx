@@ -1,46 +1,39 @@
+import { Grid } from "@chakra-ui/react";
 import React, { useState } from "react";
-import {
-  ModalButton,
-  ModalContent,
-  ModalFooter,
-  useDialog,
-} from "react-st-modal";
-import "./style.css";
+import { Button } from "../../components/Button";
+import { useDialog } from "react-st-modal";
+import { TextInput } from "../TextInput";
 
-function CreatePlaylistDialogContent() {
+export function CreatePlaylistDialogContent() {
   const dialog = useDialog();
   const [value, setValue] = useState("");
 
   // TODO: Enter does not work
   return (
-    <form>
-      <div className="CreatePlaylistDialogContent__container">
-        <ModalContent>
-          <div className="input-container">
-            <input
-              type="text"
-              required={true}
-              onChange={(e: any) => {
-                setValue(e.target.value);
-              }}
-            />
-            <label>Name</label>
-          </div>
-        </ModalContent>
-        <ModalFooter>
-          <ModalButton
-            onClick={() => {
-              if (value && value.length > 0) {
-                dialog.close(value);
-              }
-            }}
-          >
-            Create
-          </ModalButton>
-        </ModalFooter>
-      </div>
-    </form>
+    <Grid padding="2em" rowGap="2em" justifyItems="center">
+      <TextInput
+        label="Playlist Name"
+        onChange={(e: any) => {
+          setValue(e.target.value);
+        }}
+      />
+      <Button
+        lineHeight="1.2"
+        fontWeight="600"
+        height="3rem"
+        minWidth="3rem"
+        fontSize="1.125rem"
+        borderRadius="0.375rem"
+        paddingLeft="1.5rem"
+        paddingRight="1.5rem"
+        onClick={() => {
+          if (value && value.length > 0) {
+            dialog.close(value);
+          }
+        }}
+      >
+        Create
+      </Button>
+    </Grid>
   );
 }
-
-export { CreatePlaylistDialogContent };

@@ -1,0 +1,31 @@
+.input-container {
+  position: relative;
+}
+.input-container label {
+  position: absolute;
+  top: 12px;
+  left: 4px;
+  font-size: 1.5em;
+  color: #000;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+}
+.input-container input {
+  border: 0;
+  border-bottom: 3px solid black;
+  background: transparent;
+  width: 100%;
+  padding: 8px 0 5px 4px;
+  font-size: 1.5em;
+  color: #000;
+}
+.input-container input:focus {
+  border: none;
+  outline: none;
+  border-bottom: 3px solid #1db954;
+}
+.input-container input:focus ~ label,
+.input-container input:valid ~ label {
+  top: -12px;
+  font-size: 0.85em;
+}
