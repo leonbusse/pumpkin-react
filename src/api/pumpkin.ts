@@ -32,7 +32,7 @@ export async function fetchTracks(
   userId: string,
   offset: number,
   limit: number
-): Promise<SpotifyTrack[] | null> {
+): Promise<PumpkinTrack[] | null> {
   console.log("fetchTracks...");
   return redirectOnUnauthorized(async () => {
     const url = `${pumpkinEndpoint}api/v1/tracks/${userId}?offset=${offset}&limit=${limit}`;
@@ -44,11 +44,11 @@ export async function fetchTracks(
       },
     });
     const data = await parse(response);
-    return data as SpotifyTrack[];
+    return data as PumpkinTrack[];
   });
 }
 
-export async function fetchUser(userId: string): Promise<SpotifyUser> {
+export async function fetchUser(userId: string): Promise<PumpkinUser> {
   console.log(`fetchUser ${userId}...`);
   return redirectOnUnauthorized(async () => {
     const url = `${pumpkinEndpoint}api/v1/user/${userId}`;
@@ -92,35 +92,17 @@ export async function createPlaylist(
   });
 }
 
-export interface SpotifyTrack {
+export interface PumpkinTrack {
   id: string;
   name: string;
-  preview_url: string | null;
-  album: SpotifyAlbum;
-  artist: SpotifyArtist | null;
+  previewUrl: string | null;
+  album: string;
+  artists: string[];
+  imageUrl: string;
 }
 
-export interface SpotifyUser {
+export interface PumpkinUser {
   id: string;
-  display_name: string;
+  displayName: string;
   email: string;
-  product: string;
-}
-
-export interface SpotifyAlbum {
-  id: string;
-  name: string;
-  artists: SpotifyArtist[];
-  images: SpotifyImage[];
-}
-
-export interface SpotifyImage {
-  url: string;
-  hieght: number;
-  width: number;
-}
-
-export interface SpotifyArtist {
-  id: string;
-  name: string;
 }

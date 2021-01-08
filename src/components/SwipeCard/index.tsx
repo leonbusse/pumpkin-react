@@ -1,9 +1,9 @@
 import React, { FC } from "react";
-import { SpotifyTrack } from "../../api/pumpkin";
+import { PumpkinTrack } from "../../api/pumpkin";
 import { Box, Grid, Text } from "@chakra-ui/react";
 
 interface SwipeCardProps {
-  track: SpotifyTrack;
+  track: PumpkinTrack;
 }
 
 const cardWidthVw = 80;
@@ -35,7 +35,7 @@ const SwipeCard: FC<SwipeCardProps> = (props) => {
         maxHeight={`${cardMaxWidthEm}em`}
         maxWidth={`${cardMaxWidthEm}em`}
         borderRadius="10px 10px 0 0"
-        backgroundImage={`url(${track.album.images[0].url})`}
+        backgroundImage={`url(${track.imageUrl})`}
         backgroundSize="cover"
       />
       <Grid
@@ -48,14 +48,14 @@ const SwipeCard: FC<SwipeCardProps> = (props) => {
         <Text fontSize={{ base: "1em", md: "1.25em" }} isTruncated width="100%">
           {trackName}
         </Text>
-        {track.album.artists[0] && (
+        {track.artists[0] && (
           <Text
             fontSize={{ base: "1em", md: "1.25em" }}
             fontWeight="700"
             isTruncated
             width="100%"
           >
-            {track.album.artists.map((a) => a.name).join(", ")}
+            {track.artists.join(", ")}
           </Text>
         )}
       </Grid>

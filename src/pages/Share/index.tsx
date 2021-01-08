@@ -3,9 +3,9 @@ import { Redirect, useParams } from "react-router-dom";
 import {
   fetchTracks,
   fetchUser,
-  SpotifyTrack,
-  SpotifyUser,
+  PumpkinTrack,
   createPlaylist,
+  PumpkinUser,
 } from "../../api/pumpkin";
 import { Loading } from "../../components/Loading";
 import { SwipeCard } from "../../components/SwipeCard";
@@ -177,7 +177,7 @@ export const SharePage: FC = () => {
                 fontSize="2xl"
                 marginTop=".25em"
               >
-                Viewing {libraryUser.display_name}'s library
+                Viewing {libraryUser.displayName}'s library
               </Text>
               <Spacer />
               <Box as="section" className="SharePage__swipe-container">
@@ -194,7 +194,7 @@ export const SharePage: FC = () => {
                   )}
                 </div>
                 <audio
-                  src={currentTrack.preview_url as string}
+                  src={currentTrack.previewUrl as string}
                   ref={audioPlayer}
                   onEnded={() => setPlayling(false)}
                 />
@@ -236,7 +236,7 @@ function useSharePageData(libraryUserId: string, trackIndex: number) {
 
 function useUserData(userId: string) {
   const [error, setError] = useState(null);
-  const [user, setUser] = useState<SpotifyUser | null>(null);
+  const [user, setUser] = useState<PumpkinUser | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -281,7 +281,7 @@ function useLoggedInUser() {
 
 function useTrackPagination(libraryUserId: string, trackIndex: number) {
   const [error, setError] = useState(null);
-  const [tracks, setTracks] = useState<Record<number, SpotifyTrack>>({});
+  const [tracks, setTracks] = useState<Record<number, PumpkinTrack>>({});
   const [fetchedAllTracks, setFetchedAllTracks] = useState(false);
   const [fetchingTracks, setFetchingTracks] = useState(false);
 
@@ -308,11 +308,11 @@ function useTrackPagination(libraryUserId: string, trackIndex: number) {
             setFetchedAllTracks(true);
             return;
           }
-          const newTracksRecord: Record<number, SpotifyTrack> = {};
-          newTracks.forEach((t: SpotifyTrack, i: number) => {
+          const newTracksRecord: Record<number, PumpkinTrack> = {};
+          newTracks.forEach((t: PumpkinTrack, i: number) => {
             newTracksRecord[fetchIndex + i] = t;
           });
-          const updatedTracks: Record<number, SpotifyTrack> = {
+          const updatedTracks: Record<number, PumpkinTrack> = {
             ...tracks,
             ...newTracksRecord,
           };

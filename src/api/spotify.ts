@@ -1,4 +1,4 @@
-import { SpotifyUser } from "./pumpkin";
+import { PumpkinUser } from "./pumpkin";
 import { redirectOnUnauthorized, parse } from "./utils";
 
 const SPOTIFY_CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
@@ -23,7 +23,7 @@ function getSpotifyLoginUrl(destination?: string | undefined) {
 
 async function fetchLoggedInUser(
   accessToken: string
-): Promise<SpotifyUser | null> {
+): Promise<PumpkinUser | null> {
   console.log("fetch logged in Spotify user...");
   return redirectOnUnauthorized(async () => {
     const url = "https://api.spotify.com/v1/me";

@@ -1,9 +1,9 @@
 import React from "react";
-import { SpotifyUser } from "./api/pumpkin";
+import { PumpkinUser } from "./api/pumpkin";
 
 export interface SpotifyState {
   accessToken: string | null;
-  user: SpotifyUser | null;
+  user: PumpkinUser | null;
 }
 
 export interface PumpkinState {

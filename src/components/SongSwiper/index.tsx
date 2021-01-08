@@ -1,10 +1,10 @@
 import React, { FC } from "react";
 import TinderCard from "react-tinder-card";
-import { SpotifyTrack } from "../../api/pumpkin";
+import { PumpkinTrack } from "../../api/pumpkin";
 import { SwipeCard } from "../SwipeCard";
 
 interface SongSwiperProps {
-  track: SpotifyTrack;
+  track: PumpkinTrack;
   onSwipe: (direction: string) => void;
   onCardLeftScreen: (myIdentifier: string) => void;
 }
