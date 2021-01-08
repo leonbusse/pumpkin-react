@@ -1,6 +1,4 @@
-import { redirectOnUnauthorized } from "./spotify";
-
-export class UnauthorizedError extends Error {}
+import { redirectOnUnauthorized, parse } from "./utils";
 
 const pumpkinEndpoint = process.env.REACT_APP_PUMPKIN_ENDPOINT;
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -74,38 +72,24 @@ export async function createPlaylist(
   spotifyAccessToken: string
 ): Promise<string | null> {
   console.log("createPlaylist...");
-  // return redirectOnUnauthorized(async () => {
-  const response = await fetch(`${pumpkinEndpoint}api/v1/create-playlist`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      spotifyAccessToken: spotifyAccessToken,
-      userId: userId,
-      libraryUserId: libraryUserId,
-      playlistName: playlistName,
-      trackIds: trackIds,
-    }),
+  return redirectOnUnauthorized(async () => {
+    const response = await fetch(`${pumpkinEndpoint}api/v1/create-playlist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        spotifyAccessToken: spotifyAccessToken,
+        userId: userId,
+        libraryUserId: libraryUserId,
+        playlistName: playlistName,
+        trackIds: trackIds,
+      }),
+    });
+    const data = await parse(response);
+    return data;
   });
-  const data = await parse(response);
-  return data;
-  // });
-}
-
-async function parse(response: Response): Promise<any> {
-  const data = await response.json();
-  console.log("response: ", data);
-  if (data.error) {
-    const errorString = JSON.stringify(data.error);
-    if (data.error.statusCode === 401) {
-      throw new UnauthorizedError(errorString);
-    } else {
-      throw Error(errorString);
-    }
-  }
-  return data;
 }
 
 export interface SpotifyTrack {

@@ -46,6 +46,12 @@ export const SharePage: FC = () => {
   const currentTrack = tracks && tracks[trackIndex];
   const nextTrack = tracks && tracks[trackIndex + 1];
 
+  useEffect(() => {
+    if (error) {
+      throw error;
+    }
+  }, [error]);
+
   // TODO: control player via useEffect only
   useEffect(() => {
     if (audioPlayer && audioPlayer.current) {
@@ -90,13 +96,17 @@ export const SharePage: FC = () => {
 
   const onCreatePlaylist = async (playlistName: string) => {
     if (spotifyAccessToken && userId) {
-      await createPlaylist(
+      const success = await createPlaylist(
         userId,
         libraryUserId,
         playlistName,
         globalState.pumpkin.likes[libraryUserId],
         spotifyAccessToken
       );
+      if (!success) {
+        return;
+      }
+
       globalSetters.setPumpkinState({
         likes: { ...globalState.pumpkin.likes, [libraryUserId]: [] },
       });

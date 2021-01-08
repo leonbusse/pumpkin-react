@@ -1,5 +1,5 @@
-import { delay } from "../util";
-import { SpotifyUser, UnauthorizedError } from "./pumpkin";
+import { SpotifyUser } from "./pumpkin";
+import { redirectOnUnauthorized, parse } from "./utils";
 
 const SPOTIFY_CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const SPOTIFY_REDIRECT_URI = `${process.env.REACT_APP_BASE_URL}spotify/callback`;
@@ -21,28 +21,6 @@ function getSpotifyLoginUrl(destination?: string | undefined) {
   return url;
 }
 
-export async function redirectOnUnauthorized<T>(
-  block: () => T,
-  destination?: string
-): Promise<T | null> {
-  try {
-    return await block();
-  } catch (e) {
-    console.error("caught API error");
-    if (e instanceof UnauthorizedError) {
-      console.error("caught 401");
-      const d = destination || window.location.pathname;
-      await delay(3000);
-      window.location.href = getSpotifyLoginUrl(d);
-    } else {
-      console.error(e);
-      await delay(3000);
-      throw e;
-    }
-    return null;
-  }
-}
-
 async function fetchLoggedInUser(
   accessToken: string
 ): Promise<SpotifyUser | null> {
@@ -56,11 +34,7 @@ async function fetchLoggedInUser(
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    const data = await response.json();
-    console.log("logged in Spotify user response: ", data);
-    if (data.error) {
-      throw Error(JSON.stringify(data.error));
-    }
+    const data = await parse(response);
     return data;
   });
 }
