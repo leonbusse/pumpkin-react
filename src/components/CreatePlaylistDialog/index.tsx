@@ -10,7 +10,14 @@ export function CreatePlaylistDialogContent() {
 
   // TODO: Enter does not work
   return (
-    <Grid as="form" padding="2em" rowGap="2em" justifyItems="center">
+    <Grid
+      as="form"
+      // eslint-disable-next-line no-script-url
+      action="javascript:void(0);"
+      padding="2em"
+      rowGap="2em"
+      justifyItems="center"
+    >
       <TextInput
         label="Playlist Name"
         onChange={(e: any) => {

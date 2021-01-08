@@ -23,7 +23,7 @@ function LandingPage() {
         <Button
           as="a"
           href={
-            spotifyState.accessToken ? "/create-link" : getSpotifyLoginUrl()
+            spotifyState.accessToken ? "/create-link" : getSpotifyLoginUrl("/")
           }
         >
           Share

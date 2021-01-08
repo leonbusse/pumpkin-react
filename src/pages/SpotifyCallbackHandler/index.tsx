@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { fetchLoggedInUser } from "../../api/spotify";
 import { globalSetters, GlobalStateContext, SpotifyState } from "../../state";
 
-function SpotifyCallbackHandler() {
-  console.error("SpotifyCallbackHandler");
+export const SpotifyCallbackHandler: FC = () => {
+  console.log("handle Spotify login callback...");
+  console.log("    url:  " + window.location.href);
   const { setSpotifyState } = globalSetters;
   const spotifyState: SpotifyState = useContext(GlobalStateContext).spotify;
   const spotifyAccessToken = window.location.hash
@@ -18,22 +19,18 @@ function SpotifyCallbackHandler() {
   let destination =
     encodedDestination && decodeURIComponent(encodedDestination);
 
-  if (destination === "undefined") {
-    destination = undefined;
-  }
-
   if (spotifyAccessToken) {
     fetchLoggedInUser(spotifyAccessToken).then((u) => {
       setSpotifyState({ user: u });
     });
     setSpotifyState({ accessToken: spotifyAccessToken });
-    return <Redirect to={destination || "/create-link"} />;
+    const d = destination || "/";
+    console.log("received new access token, redirecting to " + d);
+    return <Redirect to={d} />;
   }
   if (!spotifyState.accessToken) {
     console.error("no spotify token in url or state!");
     return <Redirect to="/" />;
   }
-  return <Redirect to="/create-link" />;
-}
-
-export { SpotifyCallbackHandler };
+  return <Redirect to="/" />;
+};

@@ -10,7 +10,6 @@ function LinkCreatedPage() {
   const [copied, setCopied] = useState(false);
 
   if (!shareLink) {
-    console.error("no shareLink available");
     return (
       <>
         <Redirect to="/" />

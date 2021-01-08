@@ -3,7 +3,6 @@ import { Redirect, useParams } from "react-router-dom";
 import {
   fetchTracks,
   fetchUser,
-  likeTrack,
   SpotifyTrack,
   SpotifyUser,
   createPlaylist,
@@ -20,14 +19,16 @@ import { fetchLoggedInUser } from "../../api/spotify";
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { BasePage } from "../../components/BasePage";
 import "./style.css";
+import { LoginRedirect } from "../../components/LoginRedirect";
 
 interface SharePagePathParams {
   id: string;
 }
 
-const SharePage: FC = () => {
+export const SharePage: FC = () => {
   const { id: libraryUserId } = useParams<SharePagePathParams>();
-  const spotifyAccessToken = useContext(GlobalStateContext).spotify.accessToken;
+  const globalState = useContext(GlobalStateContext);
+  const spotifyAccessToken = globalState.spotify.accessToken;
 
   const [trackIndex, setTrackIndex] = useState<number>(0);
   const [playing, setPlayling] = useState(false);
@@ -58,7 +59,7 @@ const SharePage: FC = () => {
 
   const onSwipe = (direction: string) => {
     if (direction === "right" && userId && libraryUserId && currentTrack) {
-      likeTrack(userId, libraryUserId, currentTrack.id);
+      likeTrack(libraryUserId, currentTrack.id);
     } else {
     }
   };
@@ -77,9 +78,28 @@ const SharePage: FC = () => {
     }
   };
 
-  const onCreatePlaylist = (playlistName: string) => {
+  function likeTrack(libraryUserId: string, trackId: string) {
+    const likes = globalState.pumpkin.likes;
+    const previousLikes = likes[libraryUserId] || [];
+    const newLikes = { ...likes, [libraryUserId]: [...previousLikes, trackId] };
+    console.log("updated likes:", newLikes);
+    globalSetters.setPumpkinState({
+      likes: newLikes,
+    });
+  }
+
+  const onCreatePlaylist = async (playlistName: string) => {
     if (spotifyAccessToken && userId) {
-      createPlaylist(userId, libraryUserId, playlistName, spotifyAccessToken);
+      await createPlaylist(
+        userId,
+        libraryUserId,
+        playlistName,
+        globalState.pumpkin.likes[libraryUserId],
+        spotifyAccessToken
+      );
+      globalSetters.setPumpkinState({
+        likes: { ...globalState.pumpkin.likes, [libraryUserId]: [] },
+      });
       setDone(true);
     } else {
       throw Error(
@@ -99,13 +119,7 @@ const SharePage: FC = () => {
   };
 
   if (!spotifyAccessToken) {
-    return (
-      <Redirect
-        to={`/login?destination=${encodeURIComponent(
-          window.location.pathname
-        )}`}
-      />
-    );
+    return <LoginRedirect />;
   }
 
   if (done) {
@@ -218,6 +232,8 @@ function useUserData(userId: string) {
     (async () => {
       try {
         const user = await fetchUser(userId);
+        if (!user) return;
+
         setUser(user);
       } catch (e) {
         setError(e);
@@ -239,6 +255,8 @@ function useLoggedInUser() {
         if (accessToken) {
           setFetching(true);
           const loggedInUser = await fetchLoggedInUser(accessToken);
+          if (!loggedInUser) return;
+
           setSpotifyState({ user: loggedInUser });
           setError(null);
           setFetching(false);
@@ -274,6 +292,8 @@ function useTrackPagination(libraryUserId: string, trackIndex: number) {
           setFetchingTracks(true);
           const fetchIndex = lastAvailableIndex + 1;
           const newTracks = await fetchTracks(libraryUserId, fetchIndex, 3);
+          if (!newTracks) return;
+
           if (newTracks.length === 0) {
             setFetchedAllTracks(true);
             return;
@@ -304,5 +324,3 @@ function useTrackPagination(libraryUserId: string, trackIndex: number) {
   const ratedAllTracks = fetchedAllTracks && trackIndex > lastAvailableIndex;
   return { tracks, ratedAllTracks, error };
 }
-
-export { SharePage };

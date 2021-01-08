@@ -1,62 +1,66 @@
 import React from "react";
 import { SpotifyUser } from "./api/pumpkin";
 
-interface SpotifyState {
+export interface SpotifyState {
   accessToken: string | null;
   user: SpotifyUser | null;
 }
 
-interface PumpkinState {
+export interface PumpkinState {
+  redirect: { href: string | null; destination: string | null };
   shareLink: string | null;
+  likes: Record<string, string[]>; // libraryUserId - trackIds
 }
 
-function loadState() {
+const initialState = {
+  spotify: {
+    accessToken: null,
+    user: null,
+  } as SpotifyState,
+  pumpkin: { redirect: {}, shareLink: null, likes: {} } as PumpkinState,
+};
+
+export type GlobalState = typeof initialState;
+
+export function loadState() {
   const spotifyAccessToken = localStorage.getItem("spotifyAccessToken") || null;
   const spotifyUserString = localStorage.getItem("spotifyUser");
   const spotifyUser = spotifyUserString && JSON.parse(spotifyUserString);
+  const likesString = localStorage.getItem("likes");
+  const likes = (likesString && JSON.parse(likesString)) || [];
 
   return {
     spotify: {
+      ...initialState.spotify,
       accessToken: spotifyAccessToken,
       user: spotifyUser,
     } as SpotifyState,
-    pumpkin: { shareLink: null } as PumpkinState,
+    pumpkin: { ...initialState.pumpkin, likes: likes } as PumpkinState,
   };
 }
 
-const globalState = loadState();
-type GlobalState = typeof globalState;
+export const globalState = loadState();
 
-const GlobalStateContext = React.createContext(globalState);
+export const GlobalStateContext = React.createContext(globalState);
 
-const globalSetters = {
-  setSpotifyState: (s: Partial<SpotifyState>, save?: boolean) => {
+export const globalSetters = {
+  setSpotifyState: (s: Partial<SpotifyState>) => {
     globalState.spotify = { ...globalState.spotify, ...s };
-    if (save !== false) {
-      localStorage.setItem(
-        "spotifyAccessToken",
-        globalState.spotify.accessToken || ""
-      );
-      localStorage.setItem(
-        "spotifyUser",
-        JSON.stringify(globalState.spotify.user)
-      );
-    }
+
+    localStorage.setItem(
+      "spotifyAccessToken",
+      globalState.spotify.accessToken || ""
+    );
+    localStorage.setItem(
+      "spotifyUser",
+      JSON.stringify(globalState.spotify.user)
+    );
   },
   setPumpkinState: (s: Partial<PumpkinState>) => {
     globalState.pumpkin = { ...globalState.pumpkin, ...s };
+
+    localStorage.setItem("likes", JSON.stringify(globalState.pumpkin.likes));
   },
 };
-type GlobalSetters = typeof globalSetters;
 
-function saveState(state: GlobalState) {
-  if (state.spotify.accessToken) {
-    localStorage.setItem("spotifyAccessToken", state.spotify.accessToken);
-  }
-  if (state.spotify.user) {
-    localStorage.setItem("spotifyUser", JSON.stringify(state.spotify.user));
-  }
-}
-
-export { globalState, globalSetters, GlobalStateContext, saveState, loadState };
-export type { GlobalState, SpotifyState, PumpkinState, GlobalSetters };
+export type GlobalSetters = typeof globalSetters;

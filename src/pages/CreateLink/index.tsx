@@ -5,6 +5,7 @@ import { createShareLink } from "../../api/pumpkin";
 import { globalSetters, GlobalStateContext, SpotifyState } from "../../state";
 import { BasePage } from "../../components/BasePage";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { LoginRedirect } from "../../components/LoginRedirect";
 
 function CreateLinkPage() {
   const globalState = useContext(GlobalStateContext);
@@ -16,6 +17,8 @@ function CreateLinkPage() {
     (async () => {
       if (spotifyState.accessToken) {
         const shareLink = await createShareLink(spotifyState.accessToken);
+        if (!shareLink) return;
+
         setPumpkinState({ shareLink: shareLink });
         setLoading(false);
       }
@@ -24,17 +27,13 @@ function CreateLinkPage() {
   }, []);
 
   if (!spotifyState.accessToken) {
-    console.error("no Spotify accessToken available");
-    return (
-      <>
-        <Redirect to="/login" />
-      </>
-    );
+    return <LoginRedirect />;
   }
 
   if (!loading) {
     return <Redirect to="/link-created" />;
   }
+
   return (
     <BasePage>
       <Flex

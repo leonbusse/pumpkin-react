@@ -10,6 +10,7 @@ import { SpotifyLogin } from "./pages/SpotifyLogin";
 import { PlaylistCreatedPage } from "./pages/PlaylistCreated";
 import { ChakraProvider } from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const colors = {
   colorAccent: "#1DB954",
@@ -18,11 +19,13 @@ const theme = extendTheme({ colors });
 
 function App() {
   return (
-    <GlobalStateContext.Provider value={globalState}>
-      <ChakraProvider theme={theme} resetCSS>
-        <Routing />
-      </ChakraProvider>
-    </GlobalStateContext.Provider>
+    <ErrorBoundary>
+      <GlobalStateContext.Provider value={globalState}>
+        <ChakraProvider theme={theme} resetCSS>
+          <Routing />
+        </ChakraProvider>
+      </GlobalStateContext.Provider>
+    </ErrorBoundary>
   );
 }
 
@@ -30,6 +33,7 @@ const Routing: FC = () => {
   return (
     <Router>
       <Switch>
+        {/* <RedirectHandler /> */}
         <Route path="/share/:id">
           <SharePage />
         </Route>
