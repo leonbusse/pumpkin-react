@@ -27,7 +27,7 @@ export const PlaylistCreatedPage: FC = () => {
           Have at look at your{" "}
           <ExternalLink
             href="https://open.spotify.com/"
-            color={theme.colors.colorAccent}
+            color={theme.colors.accent}
           >
             Spotify library
           </ExternalLink>

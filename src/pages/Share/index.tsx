@@ -16,7 +16,7 @@ import { globalSetters, GlobalStateContext } from "../../state";
 import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
 import { fetchLoggedInUser } from "../../api/spotify";
-import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
+import { Box, Flex, Spacer, Text, useTheme } from "@chakra-ui/react";
 import { BasePage } from "../../components/BasePage";
 import { LoginRedirect } from "../../components/LoginRedirect";
 import { useApiCall } from "../../util";
@@ -27,6 +27,7 @@ interface SharePagePathParams {
 
 export const SharePage: FC = () => {
   const { id: shareId } = useParams<SharePagePathParams>();
+  const theme = useTheme();
   const globalState = useContext(GlobalStateContext);
   const spotifyAccessToken = globalState.spotify.accessToken;
 
@@ -175,7 +176,10 @@ export const SharePage: FC = () => {
                 fontSize="2xl"
                 margin=".25em 0 1em 0"
               >
-                Viewing {libraryUser.displayName}'s library
+                <Text as="span" color={theme.colors.accent}>
+                  {libraryUser.displayName}
+                </Text>
+                's library
               </Text>
               <Spacer />
               <Box

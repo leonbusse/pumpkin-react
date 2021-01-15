@@ -21,7 +21,7 @@ export const BasePage: FC<PropsWithChildren<{}>> = (props) => {
         borderBottom="3px solid #000"
       >
         <Heading as="a" href="/" marginLeft="10px" size="2xl">
-          Pumpkin
+          ListenUp
         </Heading>
       </Flex>
       <Box width="100%" height="100%">

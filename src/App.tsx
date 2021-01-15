@@ -13,7 +13,7 @@ import { extendTheme } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const colors = {
-  colorAccent: "#1DB954",
+  accent: "#1DB954",
 };
 const theme = extendTheme({ colors });
 

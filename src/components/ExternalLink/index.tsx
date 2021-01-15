@@ -7,7 +7,7 @@ interface ExternalLinkProps extends TextProps {
 
 export const ExternalLink: FC<ExternalLinkProps> = (props) => {
   const { href, ...otherProps } = props;
-  const { colorAccent } = useTheme().colors;
+  const { accent } = useTheme().colors;
   return (
     <Text
       as="a"
@@ -15,7 +15,7 @@ export const ExternalLink: FC<ExternalLinkProps> = (props) => {
       target="_blank"
       rel="noopener noreferrer"
       _hover={{
-        color: colorAccent,
+        color: accent,
       }}
       {...otherProps}
     >

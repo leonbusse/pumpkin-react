@@ -1,12 +1,8 @@
-import React, { FC, useContext } from "react";
-import { getSpotifyLoginUrl } from "../../api/spotify";
-import { GlobalStateContext } from "../../state";
+import React, { FC } from "react";
 import { Button } from "../../components/Button";
 import { Text, Heading, Box, Flex, Spacer } from "@chakra-ui/react";
 
 export const LandingPage: FC = () => {
-  const spotifyState = useContext(GlobalStateContext).spotify;
-
   return (
     <Flex
       flexDirection="column"
@@ -16,16 +12,11 @@ export const LandingPage: FC = () => {
     >
       <Box as="section" maxW="32rem" textAlign="center" maxWidth="80vw">
         <Heading mb={4} size="4xl">
-          Pumpkin
+          ListenUp
         </Heading>
         <Text fontSize="3xl">Share your Spotify library with friends</Text>
         <Spacer height="3em" />
-        <Button
-          as="a"
-          href={
-            spotifyState.accessToken ? "/create-link" : getSpotifyLoginUrl("/")
-          }
-        >
+        <Button as="a" href="/create-link">
           Share
         </Button>
       </Box>
