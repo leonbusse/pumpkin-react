@@ -7,7 +7,7 @@ interface LoadingProps {
   error?: () => Error | null;
   errorComponent?: FC;
 }
-const Loading: FC<PropsWithChildren<LoadingProps>> = (
+export const Loading: FC<PropsWithChildren<LoadingProps>> = (
   props: PropsWithChildren<LoadingProps>
 ) => {
   const {
@@ -38,5 +38,3 @@ const Loading: FC<PropsWithChildren<LoadingProps>> = (
     (Placeholder && <Placeholder />) || <LoadingSpinner />
   );
 };
-
-export { Loading };

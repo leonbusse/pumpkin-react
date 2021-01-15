@@ -5,12 +5,10 @@ interface PlusButtonProps {
   onClick: () => void;
 }
 
-const PlusButton: FC<PlusButtonProps> = (props) => {
+export const PlusButton: FC<PlusButtonProps> = (props) => {
   return (
     <div>
       <button className={`PlusButton__button`} onClick={props.onClick}></button>
     </div>
   );
 };
-
-export { PlusButton };

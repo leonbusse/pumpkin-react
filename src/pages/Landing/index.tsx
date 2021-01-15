@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import React, { FC, useContext } from "react";
 import { getSpotifyLoginUrl } from "../../api/spotify";
 import { GlobalStateContext } from "../../state";
 import { Button } from "../../components/Button";
 import { Text, Heading, Box, Flex, Spacer } from "@chakra-ui/react";
 
-function LandingPage() {
+export const LandingPage: FC = () => {
   const spotifyState = useContext(GlobalStateContext).spotify;
 
   return (
@@ -12,7 +12,7 @@ function LandingPage() {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      height="100vh"
+      minHeight="100vh"
     >
       <Box as="section" maxW="32rem" textAlign="center" maxWidth="80vw">
         <Heading mb={4} size="4xl">
@@ -31,6 +31,4 @@ function LandingPage() {
       </Box>
     </Flex>
   );
-}
-
-export { LandingPage };
+};

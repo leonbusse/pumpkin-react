@@ -29,13 +29,13 @@ export async function createShareLink(
 }
 
 export async function fetchTracks(
-  userId: string,
+  shareId: string,
   offset: number,
   limit: number
 ): Promise<PumpkinTrack[] | null> {
   console.log("fetchTracks...");
   return redirectOnUnauthorized(async () => {
-    const url = `${pumpkinEndpoint}api/v1/tracks/${userId}?offset=${offset}&limit=${limit}`;
+    const url = `${pumpkinEndpoint}api/v1/tracks/${shareId}?offset=${offset}&limit=${limit}`;
 
     const response = await fetch(url, {
       headers: {
@@ -48,10 +48,12 @@ export async function fetchTracks(
   });
 }
 
-export async function fetchUser(userId: string): Promise<PumpkinUser> {
-  console.log(`fetchUser ${userId}...`);
+export async function fetchUserByShareId(
+  shareId: string
+): Promise<PumpkinUser> {
+  console.log(`fetchUserByShareId: ${shareId}...`);
   return redirectOnUnauthorized(async () => {
-    const url = `${pumpkinEndpoint}api/v1/user/${userId}`;
+    const url = `${pumpkinEndpoint}api/v1/share/user/${shareId}`;
 
     const response = await fetch(url, {
       headers: {

@@ -1,9 +1,11 @@
-import React from "react";
-import { Flex, Heading, Text } from "@chakra-ui/react";
+import React, { FC } from "react";
+import { Flex, Heading, Text, useTheme } from "@chakra-ui/react";
 import { Button } from "../../components/Button";
 import { BasePage } from "../../components/BasePage";
+import { ExternalLink } from "../../components/ExternalLink";
 
-function PlaylistCreatedPage() {
+export const PlaylistCreatedPage: FC = () => {
+  const theme = useTheme();
   return (
     <BasePage>
       <Flex
@@ -22,7 +24,14 @@ function PlaylistCreatedPage() {
           A playlist has been created
         </Heading>
         <Text fontSize="xl" marginBottom="2em">
-          Have at look at your Spotify library!
+          Have at look at your{" "}
+          <ExternalLink
+            href="https://open.spotify.com/"
+            color={theme.colors.colorAccent}
+          >
+            Spotify library
+          </ExternalLink>
+          !
         </Text>
         <Button as="a" href="/" width="8em" height="2.6em">
           Back
@@ -30,6 +39,4 @@ function PlaylistCreatedPage() {
       </Flex>
     </BasePage>
   );
-}
-
-export { PlaylistCreatedPage };
+};

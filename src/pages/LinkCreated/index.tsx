@@ -1,11 +1,11 @@
 import { Flex, Heading, Text, Box } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { BasePage } from "../../components/BasePage";
 import { GlobalStateContext } from "../../state";
 import { Button } from "../../components/Button";
 
-function LinkCreatedPage() {
+export const LinkCreatedPage: FC = () => {
   const shareLink = useContext(GlobalStateContext).pumpkin.shareLink;
   const [copied, setCopied] = useState(false);
 
@@ -35,7 +35,8 @@ function LinkCreatedPage() {
           size="xl"
           borderBottom="3px solid #000"
           paddingBottom="4px"
-          marginBottom="1.5em"
+          maxWidth="90vw"
+          textAlign="center"
         >
           Your link has been created
         </Heading>
@@ -43,12 +44,16 @@ function LinkCreatedPage() {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
+          padding="3em 0"
         >
           <Text
             background="black"
             color="white"
             padding=".7em .85em .7em .85em"
             borderRadius="0.375rem;"
+            maxWidth="90vw"
+            overflowX="auto"
+            overflowWrap="normal"
           >
             {shareLink}
           </Text>
@@ -60,6 +65,4 @@ function LinkCreatedPage() {
       </Flex>
     </BasePage>
   );
-}
-
-export { LinkCreatedPage };
+};

@@ -1,10 +1,10 @@
 import { Grid } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { Button } from "../../components/Button";
 import { useDialog } from "react-st-modal";
 import { TextInput } from "../TextInput";
 
-export function CreatePlaylistDialogContent() {
+export const CreatePlaylistDialogContent: FC = () => {
   const dialog = useDialog();
   const [value, setValue] = useState("");
 
@@ -44,4 +44,4 @@ export function CreatePlaylistDialogContent() {
       </Button>
     </Grid>
   );
-}
+};

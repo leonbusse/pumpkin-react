@@ -12,7 +12,7 @@ const cardMaxWidthEm = 24;
 const descriptionMaxHeightEm =
   (descriptionHeightVw / cardWidthVw) * cardMaxWidthEm;
 
-const SwipeCard: FC<SwipeCardProps> = (props) => {
+export const SwipeCard: FC<SwipeCardProps> = (props) => {
   const { track } = props;
   const trackName =
     track.name.length > 70 ? track.name.substr(0, 75) + " ..." : track.name;
@@ -48,7 +48,7 @@ const SwipeCard: FC<SwipeCardProps> = (props) => {
         <Text fontSize={{ base: "1em", md: "1.25em" }} isTruncated width="100%">
           {trackName}
         </Text>
-        {track.artists[0] && (
+        {track.artists && track.artists[0] && (
           <Text
             fontSize={{ base: "1em", md: "1.25em" }}
             fontWeight="700"
@@ -62,5 +62,3 @@ const SwipeCard: FC<SwipeCardProps> = (props) => {
     </Box>
   );
 };
-
-export { SwipeCard };

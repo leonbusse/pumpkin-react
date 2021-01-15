@@ -5,7 +5,7 @@ interface PlayButtonProps {
   onClick: () => void;
 }
 
-const PlayButton: FC<PlayButtonProps> = (props) => {
+export const PlayButton: FC<PlayButtonProps> = (props) => {
   return (
     <div className="PlayButton__wrapper">
       <button
@@ -15,5 +15,3 @@ const PlayButton: FC<PlayButtonProps> = (props) => {
     </div>
   );
 };
-
-export { PlayButton };

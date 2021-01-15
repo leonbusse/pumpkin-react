@@ -8,7 +8,7 @@ interface SongSwiperProps {
   onSwipe: (direction: string) => void;
   onCardLeftScreen: (myIdentifier: string) => void;
 }
-const SongSwiper: FC<SongSwiperProps> = (props) => {
+export const SongSwiper: FC<SongSwiperProps> = (props) => {
   const { onSwipe, onCardLeftScreen, track } = props;
 
   return (
@@ -22,5 +22,3 @@ const SongSwiper: FC<SongSwiperProps> = (props) => {
     </TinderCard>
   );
 };
-
-export { SongSwiper };

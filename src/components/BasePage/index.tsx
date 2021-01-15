@@ -1,14 +1,15 @@
 import { Text, Heading, Box, Flex, Grid } from "@chakra-ui/react";
 import React, { FC, PropsWithChildren } from "react";
+import { ExternalLink } from "../ExternalLink";
 
-const BasePage: FC<PropsWithChildren<{}>> = (props) => {
+export const BasePage: FC<PropsWithChildren<{}>> = (props) => {
   return (
     <Grid
       templateRows="auto 1fr auto"
       alignItems="start"
       minHeight="100vh"
       width="100%"
-      overflowX="hidden"
+      overflow="hidden"
     >
       <Flex
         flexDirection="row"
@@ -37,14 +38,17 @@ const BasePage: FC<PropsWithChildren<{}>> = (props) => {
         color="white"
       >
         <Text>
-          React + Ktor |{" "}
-          <Text as="a" href="https://leonbusse.dev">
-            Leon Busse
-          </Text>
+          <ExternalLink href="https://reactjs.org/">React</ExternalLink>
+          {" + "}
+          <ExternalLink href="https://ktor.io/">Ktor</ExternalLink>
+          {" | View on "}
+          <ExternalLink href="https://github.com/leonbusse/pumpkin">
+            GitHub
+          </ExternalLink>
+          {" | "}
+          <ExternalLink href="https://leonbusse.dev">Leon Busse</ExternalLink>
         </Text>
       </Flex>
     </Grid>
   );
 };
-
-export { BasePage };

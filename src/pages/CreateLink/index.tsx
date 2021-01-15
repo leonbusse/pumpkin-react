@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { Flex, Heading } from "@chakra-ui/react";
 import { Redirect } from "react-router-dom";
 import { createShareLink } from "../../api/pumpkin";
@@ -7,7 +7,7 @@ import { BasePage } from "../../components/BasePage";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { LoginRedirect } from "../../components/LoginRedirect";
 
-function CreateLinkPage() {
+export const CreateLinkPage: FC = () => {
   const globalState = useContext(GlobalStateContext);
   const spotifyState: SpotifyState = globalState.spotify;
   const { setPumpkinState } = globalSetters;
@@ -55,6 +55,4 @@ function CreateLinkPage() {
       </Flex>
     </BasePage>
   );
-}
-
-export { CreateLinkPage };
+};

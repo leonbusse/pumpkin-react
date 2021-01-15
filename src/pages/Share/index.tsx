@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState, useRef, useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import {
   fetchTracks,
-  fetchUser,
+  fetchUserByShareId,
   PumpkinTrack,
   createPlaylist,
   PumpkinUser,
@@ -18,15 +18,15 @@ import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDial
 import { fetchLoggedInUser } from "../../api/spotify";
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { BasePage } from "../../components/BasePage";
-import "./style.css";
 import { LoginRedirect } from "../../components/LoginRedirect";
+import { useApiCall } from "../../util";
 
 interface SharePagePathParams {
   id: string;
 }
 
 export const SharePage: FC = () => {
-  const { id: libraryUserId } = useParams<SharePagePathParams>();
+  const { id: shareId } = useParams<SharePagePathParams>();
   const globalState = useContext(GlobalStateContext);
   const spotifyAccessToken = globalState.spotify.accessToken;
 
@@ -41,7 +41,7 @@ export const SharePage: FC = () => {
     libraryUser,
     ratedAllTracks,
     error,
-  } = useSharePageData(libraryUserId, trackIndex);
+  } = useSharePageData(shareId, trackIndex);
 
   const currentTrack = tracks && tracks[trackIndex];
   const nextTrack = tracks && tracks[trackIndex + 1];
@@ -64,8 +64,8 @@ export const SharePage: FC = () => {
   }, [trackIndex, playing]);
 
   const onSwipe = (direction: string) => {
-    if (direction === "right" && userId && libraryUserId && currentTrack) {
-      likeTrack(libraryUserId, currentTrack.id);
+    if (direction === "right" && userId && shareId && currentTrack) {
+      likeTrack(shareId, currentTrack.id);
     } else {
     }
   };
@@ -95,12 +95,12 @@ export const SharePage: FC = () => {
   }
 
   const onCreatePlaylist = async (playlistName: string) => {
-    if (spotifyAccessToken && userId) {
+    if (spotifyAccessToken && userId && libraryUser) {
       const success = await createPlaylist(
         userId,
-        libraryUserId,
+        libraryUser.id,
         playlistName,
-        globalState.pumpkin.likes[libraryUserId],
+        globalState.pumpkin.likes[shareId],
         spotifyAccessToken
       );
       if (!success) {
@@ -108,7 +108,7 @@ export const SharePage: FC = () => {
       }
 
       globalSetters.setPumpkinState({
-        likes: { ...globalState.pumpkin.likes, [libraryUserId]: [] },
+        likes: { ...globalState.pumpkin.likes, [shareId]: [] },
       });
       setDone(true);
     } else {
@@ -163,42 +163,47 @@ export const SharePage: FC = () => {
       >
         <Loading
           condition={() =>
-            currentTrack && userId && libraryUser && libraryUserId
-              ? true
-              : false
+            currentTrack && userId && libraryUser && shareId ? true : false
           }
           error={() => error}
         >
-          {currentTrack && userId && libraryUser && libraryUserId && (
+          {currentTrack && userId && libraryUser && shareId && (
             <>
               <Text
                 width="100%"
                 paddingLeft="10px"
                 fontSize="2xl"
-                marginTop=".25em"
+                margin=".25em 0 1em 0"
               >
                 Viewing {libraryUser.displayName}'s library
               </Text>
               <Spacer />
-              <Box as="section" className="SharePage__swipe-container">
-                <div className="SharePage__swipe-cards-wrapper">
+              <Box
+                as="section"
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                width="100%"
+              >
+                <Box position="relative">
                   <SongSwiper
                     track={currentTrack}
                     onSwipe={onSwipe}
                     onCardLeftScreen={onCardLeftScreen}
                   />
                   {nextTrack && (
-                    <div className="SharePage__card-preview">
+                    <Box position="absolute" top="0" zIndex="-1">
                       <SwipeCard track={nextTrack} />
-                    </div>
+                    </Box>
                   )}
-                </div>
+                </Box>
                 <audio
                   src={currentTrack.previewUrl as string}
                   ref={audioPlayer}
                   onEnded={() => setPlayling(false)}
                 />
-                <Flex flexDirection="row">
+                <Flex flexDirection="row" padding="3em 0">
                   <PlayButton onClick={togglePlayback} playing={playing} />
                   <Box width="60px" />
                   <PlusButton onClick={onButtonDone} />
@@ -213,15 +218,15 @@ export const SharePage: FC = () => {
   );
 };
 
-function useSharePageData(libraryUserId: string, trackIndex: number) {
+function useSharePageData(shareId: string, trackIndex: number) {
   const { user, error: userError } = useLoggedInUser();
 
-  const { user: libraryUser, error: libraryUserError } = useUserData(
-    libraryUserId
+  const { user: libraryUser, error: libraryUserError } = useUserDataByShareId(
+    shareId
   );
 
   const { tracks, ratedAllTracks, error: trackError } = useTrackPagination(
-    libraryUserId,
+    shareId,
     trackIndex
   );
 
@@ -234,52 +239,25 @@ function useSharePageData(libraryUserId: string, trackIndex: number) {
   };
 }
 
-function useUserData(userId: string) {
-  const [error, setError] = useState(null);
-  const [user, setUser] = useState<PumpkinUser | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const user = await fetchUser(userId);
-        if (!user) return;
-
-        setUser(user);
-      } catch (e) {
-        setError(e);
-      }
-    })();
-  }, [userId]);
-
-  return { user, error };
+function useUserDataByShareId(
+  shareId: string
+): { user: PumpkinUser | null; error: Error | null } {
+  const { data, error } = useApiCall(shareId, fetchUserByShareId);
+  return { user: data, error };
 }
 
 function useLoggedInUser() {
-  const [error, setError] = useState<Error | null>(null);
-  const [fetching, setFetching] = useState(false);
   const { user, accessToken } = useContext(GlobalStateContext).spotify;
   const { setSpotifyState } = globalSetters;
-  useEffect(() => {
-    (async () => {
-      if (!fetching && !user) {
-        if (accessToken) {
-          setFetching(true);
-          const loggedInUser = await fetchLoggedInUser(accessToken);
-          if (!loggedInUser) return;
-
-          setSpotifyState({ user: loggedInUser });
-          setError(null);
-          setFetching(false);
-        } else {
-          setError(Error("no access token available to fetch user"));
-        }
-      }
-    })();
-  }, [user, accessToken, fetching, setSpotifyState]);
+  const arg = user ? null : accessToken; // nothing is fetched with a null argument
+  const { data, error } = useApiCall(arg, fetchLoggedInUser);
+  if (!user && data) {
+    setSpotifyState({ user: data });
+  }
   return { user, error };
 }
 
-function useTrackPagination(libraryUserId: string, trackIndex: number) {
+function useTrackPagination(shareId: string, trackIndex: number) {
   const [error, setError] = useState(null);
   const [tracks, setTracks] = useState<Record<number, PumpkinTrack>>({});
   const [fetchedAllTracks, setFetchedAllTracks] = useState(false);
@@ -301,7 +279,7 @@ function useTrackPagination(libraryUserId: string, trackIndex: number) {
         try {
           setFetchingTracks(true);
           const fetchIndex = lastAvailableIndex + 1;
-          const newTracks = await fetchTracks(libraryUserId, fetchIndex, 3);
+          const newTracks = await fetchTracks(shareId, fetchIndex, 3);
           if (!newTracks) return;
 
           if (newTracks.length === 0) {
@@ -324,7 +302,7 @@ function useTrackPagination(libraryUserId: string, trackIndex: number) {
       }
     })();
   }, [
-    libraryUserId,
+    shareId,
     trackIndex,
     tracks,
     fetchingTracks,

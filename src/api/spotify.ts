@@ -11,7 +11,7 @@ const spotifyScopes = [
   "playlist-modify-private",
 ];
 
-function getSpotifyLoginUrl(destination?: string | undefined) {
+export function getSpotifyLoginUrl(destination?: string | undefined) {
   const redirectUrl = SPOTIFY_REDIRECT_URI;
   const state = destination;
   const url = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${encodeURIComponent(
@@ -21,7 +21,7 @@ function getSpotifyLoginUrl(destination?: string | undefined) {
   return url;
 }
 
-async function fetchLoggedInUser(
+export async function fetchLoggedInUser(
   accessToken: string
 ): Promise<PumpkinUser | null> {
   console.log("fetch logged in Spotify user...");
@@ -38,5 +38,3 @@ async function fetchLoggedInUser(
     return data;
   });
 }
-
-export { getSpotifyLoginUrl, fetchLoggedInUser };
