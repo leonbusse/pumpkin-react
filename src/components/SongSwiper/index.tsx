@@ -15,7 +15,6 @@ export const SongSwiper: FC<SongSwiperProps> = (props) => {
     <TinderCard
       onSwipe={onSwipe}
       onCardLeftScreen={() => onCardLeftScreen(track.id)}
-      preventSwipe={["up", "down"]}
       key={track.id}
     >
       <SwipeCard track={track} />
