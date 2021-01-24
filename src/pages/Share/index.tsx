@@ -47,13 +47,11 @@ export const SharePage: FC = () => {
   const currentTrack = tracks && tracks[trackIndex];
   const nextTrack = tracks && tracks[trackIndex + 1];
 
-  useEffect(() => {
-    if (error) {
-      throw error;
-    }
-  }, [error]);
 
-  // TODO: control player via useEffect only
+  /** 
+   * effects
+   */
+
   useEffect(() => {
     if (audioPlayer && audioPlayer.current) {
       if (playing) {
@@ -63,6 +61,11 @@ export const SharePage: FC = () => {
       }
     }
   }, [trackIndex, playing]);
+
+
+  /** 
+   * callbacks
+   */
 
   const onSwipe = (direction: string) => {
     if (direction === "right" && userId && shareId && currentTrack) {
@@ -102,15 +105,15 @@ export const SharePage: FC = () => {
         libraryUser.id,
         playlistName,
         globalState.pumpkin.likes[shareId],
-        spotifyAccessToken
+        spotifyAccessToken,
       );
       if (!success) {
         return;
       }
 
-      globalSetters.setPumpkinState({
-        likes: { ...globalState.pumpkin.likes, [shareId]: [] },
-      });
+      const updatedState = { likes: { ...globalState.pumpkin.likes } }
+      delete updatedState.likes[shareId]
+      globalSetters.setPumpkinState(updatedState);
       setDone(true);
     } else {
       throw Error(
@@ -128,6 +131,19 @@ export const SharePage: FC = () => {
       onCreatePlaylist(playlistName);
     }
   };
+
+
+  /** 
+   * early returns 
+   */
+
+  if (window.location.search.includes("action=createPlaylist")) {
+    console.log("window.location.search:", window.location.search)
+    const afterPlaylistSplit = window.location.search.split("playlistName=", 2)[1] || "";
+    const playlistName = decodeURIComponent(afterPlaylistSplit.split("=")[0] || "");
+    (async () => { onCreatePlaylist(playlistName) })()
+    return <></>;
+  }
 
   if (!spotifyAccessToken) {
     return <LoginRedirect />;
@@ -153,6 +169,11 @@ export const SharePage: FC = () => {
       </StaticDialog>
     );
   }
+
+
+  /** 
+   * rendering
+   */
 
   return (
     <BasePage>
