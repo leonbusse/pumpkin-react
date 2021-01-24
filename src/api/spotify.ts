@@ -6,6 +6,7 @@ const SPOTIFY_REDIRECT_URI = `${process.env.REACT_APP_BASE_URL}spotify/callback`
 const spotifyScopes = [
   "user-read-private",
   "playlist-read-private",
+  "playlist-read-collaborative",
   "user-read-email",
   "user-library-read",
   "playlist-modify-private",
