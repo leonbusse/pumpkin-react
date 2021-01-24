@@ -14,7 +14,7 @@ export function useApiCall<T, R>(
 
   useEffect(() => {
     (async () => {
-      if (arg && !fetching && !data) {
+      if (!error && arg && !fetching && !data) {
         setFetching(true);
         try {
           const r: R | null = await call(arg);
@@ -28,7 +28,7 @@ export function useApiCall<T, R>(
         }
       }
     })();
-  }, [arg, call, fetching, setFetching, data]);
+  }, [error, arg, call, fetching, setFetching, data]);
 
   return { data, error };
 }
