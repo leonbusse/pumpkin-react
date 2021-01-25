@@ -46,3 +46,11 @@
 .PlusButton__button:hover::before {
   background-color: #1db954;
 }
+
+.PlusButton__disabled {
+  pointer-events:  none;
+}
+
+.PlusButton__disabled:before, .PlusButton__disabled:after {
+  background-color: gray;
+}

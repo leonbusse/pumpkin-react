@@ -68,7 +68,7 @@ export const SharePage: FC = () => {
    */
 
   const onSwipe = (direction: string) => {
-    if (direction === "right" && userId && shareId && currentTrack) {
+    if ((direction === "up" || direction === "right") && userId && shareId && currentTrack) {
       likeTrack(shareId, currentTrack.id);
     } else {
     }
@@ -231,7 +231,7 @@ export const SharePage: FC = () => {
                 <Flex flexDirection="row" padding="3em 0">
                   <PlayButton onClick={togglePlayback} playing={playing} />
                   <Box width="60px" />
-                  <PlusButton onClick={onButtonDone} />
+                  <PlusButton onClick={onButtonDone} active={(globalState.pumpkin.likes[shareId]?.length > 0) || false} />
                 </Flex>
               </Box>
               <Spacer />
