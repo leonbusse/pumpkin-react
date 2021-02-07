@@ -1,5 +1,5 @@
 import React from "react";
-import { PumpkinUser } from "./api/pumpkin";
+import { PumpkinTrack, PumpkinUser } from "./api/pumpkin";
 
 export interface SpotifyState {
   accessToken: string | null;
@@ -9,7 +9,7 @@ export interface SpotifyState {
 export interface PumpkinState {
   redirect: { href: string | null; destination: string | null };
   shareLink: string | null;
-  likes: Record<string, string[]>; // libraryUserId - trackIds
+  likes: Record<string, PumpkinTrack[]>; // libraryUserId - tracks
 }
 
 const initialState = {
