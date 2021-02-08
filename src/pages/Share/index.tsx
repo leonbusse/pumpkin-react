@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useRef, useContext } from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { Box, Flex, ListItem, Text, UnorderedList, useTheme } from "@chakra-ui/react";
+import { Box, Flex, Heading, ListItem, Spacer, Text, UnorderedList, useTheme } from "@chakra-ui/react";
 import {
   fetchTracks,
   fetchUserByShareId,
@@ -177,27 +177,31 @@ export const SharePage: FC = () => {
    */
 
   return (
-    <BasePage>
-      <Flex
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
+    <Flex
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      width="100%"
+      height="100vh"
+    >
+      <Loading
+        condition={() =>
+          currentTrack && userId && libraryUser && shareId ? true : false
+        }
+        error={() => error}
       >
-        <Loading
-          condition={() =>
-            currentTrack && userId && libraryUser && shareId ? true : false
-          }
-          error={() => error}
-        >
-          {currentTrack && userId && libraryUser && shareId && (
-            <Box
-              flexDirection="column"
-              justifyContent="start"
-              alignItems="center"
-              width="100%"
-              height="100%">
+        {currentTrack && userId && libraryUser && shareId && (
+          <Flex
+            flexDirection="column"
+            justifyContent="start"
+            alignItems="center"
+            width="100%"
+            height="100%">
 
+            <Box
+              width="100%"
+              flex="1"
+              maxHeight="calc(100vh - 5em)">
               {activeMobileScreen === MobileScreen.Listen ? <ListenScreen
                 libraryUser={libraryUser}
                 currentTrack={currentTrack}
@@ -207,29 +211,22 @@ export const SharePage: FC = () => {
               /> : <OverviewScreen
                   onDone={onButtonDone}
                   likes={globalState.pumpkin.likes[shareId]} />}
-
-              <audio
-                src={currentTrack.previewUrl as string}
-                ref={audioPlayer}
-                onEnded={() => setPlayling(false)}
-              />
-              {/* <Flex flexDirection="row" padding="3em 0" display="none">
-                  <PlayButton onClick={togglePlayback} playing={playing} />
-                  <Box width="60px" />
-                  <PlusButton onClick={onButtonDone} active={(globalState.pumpkin.likes[shareId]?.length > 0) || false} />
-                </Flex> */}
-
-              <ShareBottomBar
-                togglePlayback={togglePlayback}
-                playing={playing}
-                onDone={onButtonDone}
-                activeMobileScreen={activeMobileScreen}
-                setActiveMobileScreen={setActiveMobileScreen} />
             </Box>
-          )}
-        </Loading>
-      </Flex>
-    </BasePage >
+            <audio
+              src={currentTrack.previewUrl as string}
+              ref={audioPlayer}
+              onEnded={() => setPlayling(false)}
+            />
+            <ShareBottomBar
+              togglePlayback={togglePlayback}
+              playing={playing}
+              onDone={onButtonDone}
+              activeMobileScreen={activeMobileScreen}
+              setActiveMobileScreen={setActiveMobileScreen} />
+          </Flex>
+        )}
+      </Loading>
+    </Flex>
   );
 };
 
@@ -240,24 +237,44 @@ interface ListenScreenProps {
   onCardLeftScreen: (myIdentifier: string) => Promise<void>;
   nextTrack: PumpkinTrack;
 }
+
 const ListenScreen: FC<ListenScreenProps> = (props) => {
   const { libraryUser, currentTrack, onSwipe, onCardLeftScreen, nextTrack } = props;
   const theme = useTheme();
 
   return (
-    <div>
+    <Flex
+      flexDirection="column"
+      justifyContent="start"
+      alignItems="center"
+      width="100%"
+      height="100%"
+      paddingBottom="2em"
+    >
+      <Heading as="a"
+        href="/"
+        width="100%"
+        textAlign="center"
+        marginTop="1em"
+        size="2xl">
+        ListenUp
+        </Heading>
       <Text
         width="100%"
+        textAlign="center"
         paddingLeft="10px"
-        fontSize="2xl"
-        margin=".25em 0 1em 0"
+        fontSize="xl"
+        marginTop="1em"
       >
+        {"This is "}
         <Text as="span" color={theme.colors.accent}>
           {libraryUser.displayName}
-        </Text>'s library</Text>
-      <Box
+        </Text>
+        's library
+      </Text>
+      <Spacer />
+      <Flex
         as="section"
-        display="flex"
         flexDirection="column"
         justifyContent="start"
         alignItems="center"
@@ -275,8 +292,9 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
             </Box>
           )}
         </Box>
-      </Box>
-    </div>
+      </Flex>
+      <Spacer />
+    </Flex>
   );
 }
 
@@ -290,20 +308,73 @@ const OverviewScreen: FC<OverviewScreenProps> = (props) => {
   const { likes, onDone } = props;
 
   return (
-    <Box
+    <Flex
       as="section"
-      display="flex"
       flexDirection="column"
       justifyContent="start"
       alignItems="center"
-      width="100%">
-      <Text fontSize="xl">Liked Tracks</Text>
-      <UnorderedList padding="2em 0">
-        {likes.map((track) => <ListItem key={track.id}>{track.name}</ListItem>)}
-      </UnorderedList>
-      <Button onClick={onDone}>Done</Button>
-    </Box>
+      width="100%"
+      height="100%"
+      padding="2em 0 3em 0">
+
+      <Text fontSize="4xl" fontWeight="700">Liked Tracks</Text>
+      <TrackList likes={likes} />
+      <Box flex="1" />
+      <Box
+        // position="relative"
+        height="1em"
+        // background="linear-gradient(to top, #fff 0%, transparent 100%);"
+        // width="100%"
+        _before={{
+          content: '""',
+          position: "relative",
+          bottom: "6em",
+          zIndex: "100",
+          display: "inline-block",
+          height: "6em",
+          pointerEvents: "none",
+          background: "linear-gradient(to bottom, rgba(0,255,255,0), rgba(255,255,255,1))",
+          width: "100vw"
+        }} />
+      <Button onClick={onDone}>Add to my Spotify</Button>
+    </Flex>
   );
+}
+
+const TrackList: FC<{ likes: PumpkinTrack[] }> = (props) => {
+  const { likes } = props;
+  return <Box
+    width="100%"
+    padding="0 1em"
+    overflowY="scroll">
+    <UnorderedList
+      margin="0"
+      textAlign="center"
+      padding="2em 0">
+      {likes && likes.length > 0 ? [...likes, null].map((track) =>
+        track === null ?
+          <Box height="2em" />
+          : <ListItem
+            listStyleType="none"
+            width="70vw"
+            margin="0 auto"
+            key={track.id}>
+            <Text
+              fontSize={{ base: "1.15em", md: "1.5em" }}
+              isTruncated>
+              {track.name}
+            </Text>
+            <Text
+              fontSize={{ base: "1em", md: "1.25em" }}
+              fontWeight="700"
+              isTruncated>
+              {track.artists.join(", ")}
+            </Text>
+            <Box height="1em" />
+          </ListItem>)
+        : <Text padding="2em">You have not liked a song yet.<br />Go listen to some music!</Text>}
+    </UnorderedList>
+  </Box>
 }
 
 function useSharePageData(shareId: string, trackIndex: number) {

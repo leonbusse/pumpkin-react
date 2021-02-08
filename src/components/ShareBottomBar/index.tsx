@@ -20,9 +20,6 @@ export const ShareBottomBar: FC<ShareBottomBarProps> = (props) => {
     const theme = useTheme();
 
     return <Box
-        position="absolute"
-        bottom="0"
-        left="0"
         width="100vw"
         height="5em"
         backgroundColor={theme.colors.primary}

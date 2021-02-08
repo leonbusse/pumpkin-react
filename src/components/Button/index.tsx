@@ -17,6 +17,7 @@ export const Button = (props: any) => {
       border="solid"
       size="lg"
       colorScheme="green"
+      display="inline-grid"
     >
       {children}
     </ChakraButton>
