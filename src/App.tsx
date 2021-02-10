@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { Component, FC } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { GlobalStateContext, globalState } from "./state";
 import { LandingPage } from "./pages/Landing";
@@ -19,16 +19,38 @@ const colors = {
 };
 const theme = extendTheme({ colors });
 
-function App() {
-  return (
-    <ErrorBoundary>
-      <GlobalStateContext.Provider value={globalState}>
-        <ChakraProvider theme={theme} resetCSS>
-          <Routing />
-        </ChakraProvider>
-      </GlobalStateContext.Provider>
-    </ErrorBoundary>
-  );
+
+class App extends Component {
+
+  hasMounted = false;
+
+  stateUpdateListener = (e: any) => {
+    console.log("StateUpdate", e)
+    if (this.hasMounted) {
+      this.forceUpdate();
+    }
+  };
+
+  componentDidMount() {
+    this.hasMounted = true;
+    document.addEventListener("StateUpdate", this.stateUpdateListener);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("StateUpdate", this.stateUpdateListener);
+  }
+
+  render() {
+    return (
+      <ErrorBoundary>
+        <GlobalStateContext.Provider value={globalState}>
+          <ChakraProvider theme={theme} resetCSS>
+            <Routing />
+          </ChakraProvider>
+        </GlobalStateContext.Provider>
+      </ErrorBoundary>
+    );
+  }
 }
 
 const Routing: FC = () => {

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useRef, useContext } from "react";
+import React, { FC, useEffect, useState, useRef, useContext, useCallback } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { Box, Flex, Heading, ListItem, Spacer, Text, UnorderedList, useTheme } from "@chakra-ui/react";
 import {
@@ -15,11 +15,11 @@ import { globalSetters, GlobalStateContext } from "../../state";
 import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
 import { fetchLoggedInUser } from "../../api/spotify";
-import { BasePage } from "../../components/BasePage";
 import { LoginRedirect } from "../../components/LoginRedirect";
 import { useApiCall } from "../../util";
 import { MobileScreen, ShareBottomBar } from "../../components/ShareBottomBar";
 import { Button } from "../../components/Button";
+import { DeleteButton } from "../../components/buttons";
 
 interface SharePagePathParams {
   id: string;
@@ -27,7 +27,6 @@ interface SharePagePathParams {
 
 export const SharePage: FC = () => {
   const { id: shareId } = useParams<SharePagePathParams>();
-  const theme = useTheme();
   const globalState = useContext(GlobalStateContext);
   const spotifyAccessToken = globalState.spotify.accessToken;
 
@@ -91,13 +90,25 @@ export const SharePage: FC = () => {
 
   function likeTrack(libraryUserId: string, track: PumpkinTrack) {
     const likes = globalState.pumpkin.likes;
-    const previousLikes = likes[libraryUserId] || [];
+    const previousLikes = likes[libraryUserId]?.filter(t => t.id !== track.id) || [];
     const newLikes = { ...likes, [libraryUserId]: [...previousLikes, track] };
     console.log("updated likes:", newLikes);
     globalSetters.setPumpkinState({
       likes: newLikes,
     });
   }
+
+  function removeLikedTracks(libraryUserId: string, tracks: PumpkinTrack[]) {
+    const likes = globalState.pumpkin.likes;
+    const previousLikes = likes[libraryUserId] || [];
+    const newLikes = { ...likes, [libraryUserId]: previousLikes.filter(t => !tracks.includes(t)) };
+    console.log("updated likes:", newLikes);
+    globalSetters.setPumpkinState({
+      likes: newLikes,
+    });
+  }
+
+  const onDelete = (tracks: PumpkinTrack[]) => removeLikedTracks(shareId, tracks);
 
   const onCreatePlaylist = async (playlistName: string) => {
     if (spotifyAccessToken && userId && libraryUser) {
@@ -210,6 +221,7 @@ export const SharePage: FC = () => {
                 nextTrack={nextTrack}
               /> : <OverviewScreen
                   onDone={onButtonDone}
+                  onDelete={onDelete}
                   likes={globalState.pumpkin.likes[shareId]} />}
             </Box>
             <audio
@@ -220,7 +232,6 @@ export const SharePage: FC = () => {
             <ShareBottomBar
               togglePlayback={togglePlayback}
               playing={playing}
-              onDone={onButtonDone}
               activeMobileScreen={activeMobileScreen}
               setActiveMobileScreen={setActiveMobileScreen} />
           </Flex>
@@ -249,13 +260,12 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
       alignItems="center"
       width="100%"
       height="100%"
-      paddingBottom="2em"
+      padding="2em 0 3em 0"
     >
       <Heading as="a"
         href="/"
         width="100%"
         textAlign="center"
-        marginTop="1em"
         size="2xl">
         ListenUp
         </Heading>
@@ -302,10 +312,30 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
 interface OverviewScreenProps {
   likes: PumpkinTrack[];
   onDone: () => void;
+  onDelete: (tracks: PumpkinTrack[]) => void;
 }
 
 const OverviewScreen: FC<OverviewScreenProps> = (props) => {
-  const { likes, onDone } = props;
+  const { likes, onDone, onDelete } = props;
+
+  const [selected, setSelected] = useState<PumpkinTrack[]>([]);
+  const onSelect = useCallback(
+    (track: PumpkinTrack) => {
+      if (selected.includes(track)) {
+        setSelected(selected.filter(t => t !== track));
+      }
+      else {
+        setSelected([...selected, track]);
+      }
+    },
+    [selected]
+  );
+
+  const onDeleteButton = useCallback(() => {
+    console.log("onDelete " + selected.map(t => t.name).join(", "));
+    onDelete(selected);
+    setSelected([]);
+  }, [selected, onDelete]);
 
   return (
     <Flex
@@ -317,14 +347,11 @@ const OverviewScreen: FC<OverviewScreenProps> = (props) => {
       height="100%"
       padding="2em 0 3em 0">
 
-      <Text fontSize="4xl" fontWeight="700">Liked Tracks</Text>
-      <TrackList likes={likes} />
+      <Heading size="2xl" >Liked Tracks</Heading>
+      <TrackList likes={likes} onSelect={onSelect} selected={selected} />
       <Box flex="1" />
       <Box
-        // position="relative"
         height="1em"
-        // background="linear-gradient(to top, #fff 0%, transparent 100%);"
-        // width="100%"
         _before={{
           content: '""',
           position: "relative",
@@ -336,13 +363,28 @@ const OverviewScreen: FC<OverviewScreenProps> = (props) => {
           background: "linear-gradient(to bottom, rgba(0,255,255,0), rgba(255,255,255,1))",
           width: "100vw"
         }} />
-      <Button onClick={onDone}>Add to my Spotify</Button>
+      <Flex flexDirection="row">
+        <Box width="4em" />
+        <Button onClick={onDone}>Add to my Spotify</Button>
+        <Box width="1em" />
+        <DeleteButton
+          opacity={selected.length > 0 ? "1" : "0"}
+          onClick={onDeleteButton}
+        />
+      </Flex>
     </Flex>
   );
 }
 
-const TrackList: FC<{ likes: PumpkinTrack[] }> = (props) => {
-  const { likes } = props;
+interface TrackListProps {
+  likes: PumpkinTrack[];
+  selected: PumpkinTrack[];
+  onSelect: (track: PumpkinTrack) => void
+}
+
+const TrackList: FC<TrackListProps> = (props) => {
+  const { likes, selected, onSelect } = props;
+  const theme = useTheme();
   return <Box
     width="100%"
     padding="0 1em"
@@ -353,19 +395,23 @@ const TrackList: FC<{ likes: PumpkinTrack[] }> = (props) => {
       padding="2em 0">
       {likes && likes.length > 0 ? [...likes, null].map((track) =>
         track === null ?
-          <Box height="2em" />
+          <Box height="2em" key="spacer" />
           : <ListItem
             listStyleType="none"
-            width="70vw"
+            maxWidth={{ base: "70vw", md: "32em" }}
             margin="0 auto"
+            cursor="pointer"
+            onClick={() => onSelect(track)}
             key={track.id}>
             <Text
               fontSize={{ base: "1.15em", md: "1.5em" }}
+              color={selected.includes(track) ? theme.colors.accent : theme.colors.primary}
               isTruncated>
               {track.name}
             </Text>
             <Text
               fontSize={{ base: "1em", md: "1.25em" }}
+              color={selected.includes(track) ? theme.colors.accent : theme.colors.primary}
               fontWeight="700"
               isTruncated>
               {track.artists.join(", ")}

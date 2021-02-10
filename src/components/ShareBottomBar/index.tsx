@@ -10,13 +10,12 @@ export enum MobileScreen { Listen, LikedTracks }
 interface ShareBottomBarProps {
     togglePlayback: () => void;
     playing: boolean;
-    onDone: () => void;
     activeMobileScreen: MobileScreen;
     setActiveMobileScreen: (active: MobileScreen) => void;
 }
 
 export const ShareBottomBar: FC<ShareBottomBarProps> = (props) => {
-    const { togglePlayback, playing, onDone, activeMobileScreen, setActiveMobileScreen } = props;
+    const { togglePlayback, playing, activeMobileScreen, setActiveMobileScreen } = props;
     const theme = useTheme();
 
     return <Box
