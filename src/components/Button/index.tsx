@@ -1,20 +1,22 @@
 import { Button as ChakraButton } from "@chakra-ui/react";
 
 export const Button = (props: any) => {
-  const { children, ...otherProps } = props;
+  const { children, disabled, ...otherProps } = props;
   const hoverCss = {
-    background: "black",
-    color: "white",
-    borderColor: "black",
+    background: disabled ? "#ddd" : "black",
+    color: disabled ? "#666" : "white",
+    borderColor: disabled ? "#666" : "black"
   };
   return (
     <ChakraButton
       {...otherProps}
       _hover={hoverCss}
       _active={hoverCss}
-      color="black"
-      background="white"
+      color={disabled ? "#666" : "black"}
+      background={disabled ? "#ddd" : "white"}
       border="solid"
+      pointerEvents={disabled ? "none" : "initial"}
+      borderColor={disabled ? "#666" : "black"}
       size="lg"
       colorScheme="green"
       display="inline-grid"

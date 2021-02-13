@@ -213,13 +213,15 @@ export const SharePage: FC = () => {
               width="100%"
               flex="1"
               maxHeight="calc(100vh - 5em)">
-              {activeMobileScreen === MobileScreen.Listen ? <ListenScreen
-                libraryUser={libraryUser}
-                currentTrack={currentTrack}
-                onSwipe={onSwipe}
-                onCardLeftScreen={onCardLeftScreen}
-                nextTrack={nextTrack}
-              /> : <OverviewScreen
+              {activeMobileScreen === MobileScreen.Listen ?
+                <ListenScreen
+                  libraryUser={libraryUser}
+                  currentTrack={currentTrack}
+                  onSwipe={onSwipe}
+                  onCardLeftScreen={onCardLeftScreen}
+                  nextTrack={nextTrack}
+                /> :
+                <OverviewScreen
                   onDone={onButtonDone}
                   onDelete={onDelete}
                   likes={globalState.pumpkin.likes[shareId]} />}
@@ -365,7 +367,7 @@ const OverviewScreen: FC<OverviewScreenProps> = (props) => {
         }} />
       <Flex flexDirection="row">
         <Box width="4em" />
-        <Button onClick={onDone}>Add to my Spotify</Button>
+        <Button disabled={!likes || likes.length === 0} onClick={onDone}>Add to my Spotify</Button>
         <Box width="1em" />
         <DeleteButton
           opacity={selected.length > 0 ? "1" : "0"}
