@@ -15,6 +15,7 @@ export const Button = (props: any) => {
       color={disabled ? "#666" : "black"}
       background={disabled ? "#ddd" : "white"}
       border="solid"
+      borderWidth="3px"
       pointerEvents={disabled ? "none" : "initial"}
       borderColor={disabled ? "#666" : "black"}
       size="lg"

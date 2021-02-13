@@ -188,12 +188,14 @@ export const SharePage: FC = () => {
    */
 
   return (
-    <Flex
+    <Box
+      display="flex"
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
       width="100%"
       height="100vh"
+      overflow="hidden"
     >
       <Loading
         condition={() =>
@@ -239,7 +241,7 @@ export const SharePage: FC = () => {
           </Flex>
         )}
       </Loading>
-    </Flex>
+    </Box>
   );
 };
 
@@ -292,7 +294,8 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
         alignItems="center"
         width="100%"
       >
-        <Box position="relative">
+        <Box position="relative"
+          style={{ zIndex: 1000 }}>
           <SongSwiper
             track={currentTrack}
             onSwipe={onSwipe}
