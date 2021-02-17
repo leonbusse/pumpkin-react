@@ -9,7 +9,6 @@ export const Button = (props: any) => {
   };
   return (
     <ChakraButton
-      {...otherProps}
       _hover={hoverCss}
       _active={hoverCss}
       color={disabled ? "#666" : "black"}
@@ -21,6 +20,7 @@ export const Button = (props: any) => {
       size="lg"
       colorScheme="green"
       display="inline-grid"
+      {...otherProps}
     >
       {children}
     </ChakraButton>
