@@ -20,6 +20,7 @@ import { useApiCall } from "../../util";
 import { MobileScreen, ShareBottomBar } from "../../components/ShareBottomBar";
 import { Button } from "../../components/Button";
 import { DeleteButton } from "../../components/buttons";
+import { animated, useTransition } from "react-spring";
 
 interface SharePagePathParams {
   id: string;
@@ -144,6 +145,12 @@ export const SharePage: FC = () => {
     }
   };
 
+  const transitions = useTransition(activeMobileScreen, null, {
+    from: { opacity: 0, transform: 'translate3d(100vw, 0, 0)' },
+    enter: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+    leave: { opacity: 0, transform: 'translate3d(-20vw, 0, 0)' },
+  });
+
 
   /** 
    * early returns 
@@ -215,7 +222,26 @@ export const SharePage: FC = () => {
               width="100%"
               flex="1"
               maxHeight="calc(100vh - 5em)">
-              {activeMobileScreen === MobileScreen.Listen ?
+
+              {transitions.map(({ item, key, props }) =>
+                item === MobileScreen.Listen
+                  ? <animated.div style={{ ...props, height: "100vh", width: "100vw" }}>
+                    <ListenScreen
+                      libraryUser={libraryUser}
+                      currentTrack={currentTrack}
+                      onSwipe={onSwipe}
+                      onCardLeftScreen={onCardLeftScreen}
+                      nextTrack={nextTrack}
+                    />
+                  </animated.div>
+                  : <animated.div style={props}>
+                    <OverviewScreen
+                      onDone={onButtonDone}
+                      onDelete={onDelete}
+                      likes={globalState.pumpkin.likes[shareId]} />
+                  </animated.div>
+              )}
+              {/* {activeMobileScreen === MobileScreen.Listen ?
                 <ListenScreen
                   libraryUser={libraryUser}
                   currentTrack={currentTrack}
@@ -226,7 +252,7 @@ export const SharePage: FC = () => {
                 <OverviewScreen
                   onDone={onButtonDone}
                   onDelete={onDelete}
-                  likes={globalState.pumpkin.likes[shareId]} />}
+                  likes={globalState.pumpkin.likes[shareId]} />} */}
             </Box>
             <audio
               src={currentTrack.previewUrl as string}
