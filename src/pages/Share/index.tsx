@@ -272,11 +272,11 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
       <Flex
         flexDirection="row"
         width="100%"
-        padding="0 1em">
-        <Box width="3em" />
+        padding="0 .75em">
+        <Box width="2.5em" />
         <Heading as="a"
           href="/"
-          width="100%"
+          margin="auto"
           textAlign="center"
           size="2xl">
           ListenUp

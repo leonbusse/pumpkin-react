@@ -3,12 +3,14 @@ import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 import { CustomDialog, useDialog } from "react-st-modal";
 import { Button } from "../Button";
 import { ReactComponent as QuestionIcon } from "./question.svg";
+import { ReactComponent as PlaylistIcon } from "./../ShareBottomBar/queue.svg";
 
 export const HelpIcon: FC = () => {
     return (
         <QuestionIcon
-            width="3em"
-            height="3em"
+            cursor="pointer"
+            width="2.5em"
+            height="2.5em"
             onClick={() => showOnboardingScreen()} />
     )
 }
@@ -25,11 +27,18 @@ const OnboardingDialogContent: FC = () => {
     const dialog = useDialog();
     return (<Box padding="2em">
         <Heading
-            fontSize="1.5em">Welcome to ListenUp!</Heading>
+            fontSize="1.5em">Welcome to ListenUp</Heading>
         <Box height=".75em" />
         <Text>Like a song by swiping up or right, discard it by swiping down or left.</Text>
         <Box height=".75em" />
-        <Text>You can check and remove likes on the overview screen. When you are done listening, add all liked songs to your Spotify library!</Text>
+        <Text>{"You can check and remove likes on the overview screen "}
+            <Box display="inline-block" verticalAlign="middle">
+                <PlaylistIcon
+                    width="1.3em"
+                    height="1.3em"
+                    fill="black" />
+            </Box>
+                . When you are done listening, add all liked songs to your Spotify library!</Text>
         <Box height=".75em" />
         <Flex width="100%">
             <Button
