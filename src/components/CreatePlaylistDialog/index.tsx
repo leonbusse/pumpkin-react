@@ -8,7 +8,6 @@ export const CreatePlaylistDialogContent: FC = () => {
   const dialog = useDialog();
   const [value, setValue] = useState("");
 
-  // TODO: Enter does not work
   return (
     <Grid
       as="form"

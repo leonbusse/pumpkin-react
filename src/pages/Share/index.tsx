@@ -20,6 +20,7 @@ import { useApiCall } from "../../util";
 import { MobileScreen, ShareBottomBar } from "../../components/ShareBottomBar";
 import { Button } from "../../components/Button";
 import { DeleteButton } from "../../components/buttons";
+import { HelpIcon, useOnboardingScreen } from "../../components/OnboardingDialog";
 
 interface SharePagePathParams {
   id: string;
@@ -62,6 +63,7 @@ export const SharePage: FC = () => {
     }
   }, [trackIndex, playing]);
 
+  useOnboardingScreen();
 
   /** 
    * callbacks
@@ -259,6 +261,7 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
 
   return (
     <Flex
+      as="section"
       flexDirection="column"
       justifyContent="start"
       alignItems="center"
@@ -266,13 +269,20 @@ const ListenScreen: FC<ListenScreenProps> = (props) => {
       height="100%"
       padding="2em 0 3em 0"
     >
-      <Heading as="a"
-        href="/"
+      <Flex
+        flexDirection="row"
         width="100%"
-        textAlign="center"
-        size="2xl">
-        ListenUp
+        padding="0 1em">
+        <Box width="3em" />
+        <Heading as="a"
+          href="/"
+          width="100%"
+          textAlign="center"
+          size="2xl">
+          ListenUp
         </Heading>
+        <HelpIcon />
+      </Flex>
       <Text
         width="100%"
         textAlign="center"
@@ -522,3 +532,4 @@ function useTrackPagination(shareId: string, trackIndex: number) {
   const ratedAllTracks = fetchedAllTracks && trackIndex > lastAvailableIndex;
   return { tracks, ratedAllTracks, error };
 }
+
