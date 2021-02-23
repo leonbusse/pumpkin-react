@@ -21,21 +21,27 @@ export const ShareBottomBar: FC<ShareBottomBarProps> = (props) => {
     return <Box
         width="100vw"
         height="5em"
-        backgroundColor={theme.colors.primary}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        padding="0 1em">
+        backgroundColor={theme.colors.primary}>
+        <Box
+            width="100%"
+            height="100%"
+            maxWidth="32em"
+            margin="0 auto"
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            padding="0 1em">
 
-        <ListenButton
-            onClick={() => setActiveMobileScreen(MobileScreen.Listen)}
-            active={activeMobileScreen === MobileScreen.Listen} />
+            <ListenButton
+                onClick={() => setActiveMobileScreen(MobileScreen.Listen)}
+                active={activeMobileScreen === MobileScreen.Listen} />
 
-        <PlayButton onClick={togglePlayback}
-            active={playing} />
-        <PlaylistButton
-            onClick={() => setActiveMobileScreen(MobileScreen.LikedTracks)}
-            active={activeMobileScreen === MobileScreen.LikedTracks} />
+            <PlayButton onClick={togglePlayback}
+                active={playing} />
+            <PlaylistButton
+                onClick={() => setActiveMobileScreen(MobileScreen.LikedTracks)}
+                active={activeMobileScreen === MobileScreen.LikedTracks} />
+        </Box>
     </Box>
 }
 

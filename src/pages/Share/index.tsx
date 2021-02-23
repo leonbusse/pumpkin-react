@@ -332,6 +332,37 @@ interface OverviewScreenProps {
 
 const OverviewScreen: FC<OverviewScreenProps> = (props) => {
   const { likes, onDone, onDelete } = props;
+  return (
+    <Flex
+      as="section"
+      flexDirection="column"
+      justifyContent="start"
+      alignItems="center"
+      width="100%"
+      height="100%"
+      padding="2em 0 3em 0">
+
+      <Heading size="2xl" >Liked Tracks</Heading>
+      <LikesList
+        likes={likes}
+        onDelete={onDelete}
+        onDone={onDone} />
+    </Flex>
+  );
+}
+
+
+
+
+
+interface LikesListProps {
+  likes: PumpkinTrack[];
+  onDone: () => void;
+  onDelete: (tracks: PumpkinTrack[]) => void;
+}
+
+const LikesList: FC<LikesListProps> = (props) => {
+  const { likes, onDone, onDelete } = props;
 
   const [selected, setSelected] = useState<PumpkinTrack[]>([]);
   const onSelect = useCallback(
@@ -353,16 +384,7 @@ const OverviewScreen: FC<OverviewScreenProps> = (props) => {
   }, [selected, onDelete]);
 
   return (
-    <Flex
-      as="section"
-      flexDirection="column"
-      justifyContent="start"
-      alignItems="center"
-      width="100%"
-      height="100%"
-      padding="2em 0 3em 0">
-
-      <Heading size="2xl" >Liked Tracks</Heading>
+    <>
       <TrackList likes={likes} onSelect={onSelect} selected={selected} />
       <Box flex="1" />
       <Box
@@ -387,9 +409,19 @@ const OverviewScreen: FC<OverviewScreenProps> = (props) => {
           onClick={onDeleteButton}
         />
       </Flex>
-    </Flex>
+    </>
   );
 }
+
+
+
+
+
+
+
+
+
+
 
 interface TrackListProps {
   likes: PumpkinTrack[];
@@ -437,6 +469,17 @@ const TrackList: FC<TrackListProps> = (props) => {
     </UnorderedList>
   </Box>
 }
+
+
+
+
+
+
+
+
+
+
+
 
 function useSharePageData(shareId: string, trackIndex: number) {
   const { user, error: userError } = useLoggedInUser();
