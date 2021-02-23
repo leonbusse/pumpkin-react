@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useRef, useContext, useCallback } from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { Box, Flex, Heading, ListItem, Spacer, Text, UnorderedList, useTheme } from "@chakra-ui/react";
+import { Box, Flex, Heading, ListItem, position, Spacer, Text, UnorderedList, useTheme } from "@chakra-ui/react";
 import {
   fetchTracks,
   fetchUserByShareId,
@@ -21,6 +21,7 @@ import { MobileScreen, ShareBottomBar } from "../../components/ShareBottomBar";
 import { Button } from "../../components/Button";
 import { DeleteButton } from "../../components/buttons";
 import { HelpIcon, useOnboardingScreen } from "../../components/OnboardingDialog";
+import { animated, useTransition } from "react-spring";
 
 interface SharePagePathParams {
   id: string;
@@ -146,6 +147,12 @@ export const SharePage: FC = () => {
     }
   };
 
+  const transitions = useTransition(activeMobileScreen, null, {
+    from: { opacity: 0, transform: `translate3d(${activeMobileScreen === MobileScreen.Listen ? -400 : 400}px, 0, 0)` },
+    enter: { opacity: 1, transform: `translate3d(0vw, 0, 0)` },
+    leave: { opacity: 0, transform: `translate3d(${activeMobileScreen === MobileScreen.Listen ? 400 : -400}px, 0, 0)` },
+  });
+
 
   /** 
    * early returns 
@@ -216,19 +223,33 @@ export const SharePage: FC = () => {
             <Box
               width="100%"
               flex="1"
-              maxHeight="calc(100vh - 5em)">
-              {activeMobileScreen === MobileScreen.Listen ?
-                <ListenScreen
-                  libraryUser={libraryUser}
-                  currentTrack={currentTrack}
-                  onSwipe={onSwipe}
-                  onCardLeftScreen={onCardLeftScreen}
-                  nextTrack={nextTrack}
-                /> :
-                <OverviewScreen
-                  onDone={onButtonDone}
-                  onDelete={onDelete}
-                  likes={globalState.pumpkin.likes[shareId]} />}
+              maxHeight="calc(100vh - 5em)"
+              position="relative">
+
+              {transitions.map(({ item, key, props }) =>
+                <animated.div style={{
+                  ...props,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%"
+                }}>
+                  {item === MobileScreen.Listen
+                    ? <ListenScreen
+                      libraryUser={libraryUser}
+                      currentTrack={currentTrack}
+                      onSwipe={onSwipe}
+                      onCardLeftScreen={onCardLeftScreen}
+                      nextTrack={nextTrack}
+                    />
+                    :
+                    <OverviewScreen
+                      onDone={onButtonDone}
+                      onDelete={onDelete}
+                      likes={globalState.pumpkin.likes[shareId]} />}
+                </animated.div>
+              )}
             </Box>
             <audio
               src={currentTrack.previewUrl as string}
