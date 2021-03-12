@@ -31,7 +31,7 @@ const OnboardingDialogContent: FC = () => {
         <Box height=".75em" />
         <Text>Like a song by swiping up or right, discard it by swiping down or left.</Text>
         <Box height=".75em" />
-        <Text>{"You can check and remove likes on the overview screen "}
+        <Text>{"You can review and remove likes on the overview screen "}
             <Box display="inline-block" verticalAlign="middle">
                 <PlaylistIcon
                     width="1.3em"

@@ -1,4 +1,4 @@
-import React, { Component, FC, ReactNode, useContext } from "react";
+import React, { Component, FC } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { GlobalStateContext, globalState } from "./state";
 import { LandingPage } from "./pages/Landing";
@@ -11,7 +11,6 @@ import { PlaylistCreatedPage } from "./pages/PlaylistCreated";
 import { ChakraProvider } from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { animated, useTransition } from "react-spring";
 
 const colors = {
   primary: "black",
@@ -57,40 +56,40 @@ class App extends Component {
 
 const Routing: FC = () => {
 
-  const location = window.location;
-  const transitions = useTransition(location, (location) => location.pathname, {
-    from: { opacity: 0 },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-  });
+  // const location = window.location;
+  // const transitions = useTransition(location, (location) => location.pathname, {
+  //   from: { opacity: 0 },
+  //   enter: { opacity: 1 },
+  //   leave: { opacity: 0 },
+  // });
 
   return (
     <Router>
-      {transitions.map(({ item, props, key }) => (
-        <animated.div key={key} style={props}>
-          <Switch>
-            <Route path="/share/:id">
-              <SharePage />
-            </Route>
-            <Route path="/create-link">
-              <CreateLinkPage />
-            </Route>
-            <Route path="/link-created">
-              <LinkCreatedPage />
-            </Route>
-            <Route path="/playlist-created">
-              <PlaylistCreatedPage />
-            </Route>
-            <Route path="/login" component={SpotifyLogin}></Route>
-            <Route path="/spotify/callback">
-              <SpotifyCallbackHandler />
-            </Route>
-            <Route path="/">
-              <LandingPage />
-            </Route>
-          </Switch>
-        </animated.div>)
-      )}
+      {/* {transitions.map(({ item, props, key }) => (
+        <animated.div key={key} style={props}> */}
+      <Switch>
+        <Route path="/share/:id">
+          <SharePage />
+        </Route>
+        <Route path="/create-link">
+          <CreateLinkPage />
+        </Route>
+        <Route path="/link-created">
+          <LinkCreatedPage />
+        </Route>
+        <Route path="/playlist-created">
+          <PlaylistCreatedPage />
+        </Route>
+        <Route path="/login" component={SpotifyLogin}></Route>
+        <Route path="/spotify/callback">
+          <SpotifyCallbackHandler />
+        </Route>
+        <Route path="/">
+          <LandingPage />
+        </Route>
+      </Switch>
+      {/* </animated.div>)
+      )} */}
     </Router>
   );
 };
