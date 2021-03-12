@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useRef, useContext, useCallback } from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { Box, Flex, Heading, ListItem, position, Spacer, Text, UnorderedList, useTheme } from "@chakra-ui/react";
+import { Box, Flex, Heading, ListItem, Spacer, Text, UnorderedList, useTheme } from "@chakra-ui/react";
 import {
   fetchTracks,
   fetchUserByShareId,
