@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback, useRef } from "react";
 import {
     fetchTracks,
     fetchUserByShareId,
@@ -105,3 +105,49 @@ function useTrackPagination(shareId: string, trackIndex: number) {
     return { tracks, ratedAllTracks, error };
 }
 
+export function useUnlockedAudio() {
+    useEffect(() => {
+        document.body.addEventListener('click', unlockAudio);
+        document.body.addEventListener('touchstart', unlockAudio);
+        return () => {
+            document.body.removeEventListener('click', unlockAudio)
+            document.body.removeEventListener('touchstart', unlockAudio)
+        }
+    }, []);
+}
+
+function unlockAudio() {
+    const sound = new Audio("https://odattachmentmdr-a.akamaihd.net/mp4audiomobil/e/digas-ee50cbdf-9279-4bde-8f78-48ab89a0513a-0a15de5e5053_ee.mp3");
+    sound.play();
+    sound.pause();
+    sound.currentTime = 0;
+    document.body.removeEventListener('click', unlockAudio)
+    document.body.removeEventListener('touchstart', unlockAudio)
+}
+
+export function usePlayer(trackIndex: number) {
+    const audioPlayerRef = useRef<HTMLAudioElement>(null);
+    const [playing, setPlayling] = useState(false);
+
+    const togglePlayback = useCallback(() => {
+        if (audioPlayerRef && audioPlayerRef.current) {
+            if (audioPlayerRef.current.paused) {
+                setPlayling(true);
+            } else {
+                setPlayling(false);
+            }
+        }
+    }, [audioPlayerRef, setPlayling]);
+
+    useEffect(() => {
+        if (audioPlayerRef && audioPlayerRef.current) {
+            if (playing) {
+                audioPlayerRef.current.play();
+            } else {
+                audioPlayerRef.current.pause();
+            }
+        }
+    }, [audioPlayerRef, playing, trackIndex]);
+
+    return { togglePlayback, playing, setPlayling, audioPlayerRef };
+}

@@ -21,6 +21,7 @@ export const ShareBottomBar: FC<ShareBottomBarProps> = (props) => {
     return <Box
         width="100vw"
         height="5em"
+        zIndex="100"
         backgroundColor={theme.colors.primary}>
         <Box
             width="100%"

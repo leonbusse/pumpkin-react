@@ -82,7 +82,7 @@ const LikesList: FC<LikesListProps> = (props) => {
           display: "inline-block",
           height: "6em",
           pointerEvents: "none",
-          background: "linear-gradient(to bottom, rgba(0,255,255,0), rgba(255,255,255,1))",
+          background: "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))",
           width: "100vw"
         }} />
       <Flex flexDirection="row">

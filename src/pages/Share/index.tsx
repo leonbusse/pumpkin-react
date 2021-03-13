@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useRef, useContext } from "react";
+import React, { FC, useState, useContext, useCallback } from "react";
 import { Redirect, useParams } from "react-router-dom";
 import { Box, Flex } from "@chakra-ui/react";
 import {
@@ -11,7 +11,7 @@ import { CustomDialog, StaticDialog } from "react-st-modal";
 import { CreatePlaylistDialogContent } from "../../components/CreatePlaylistDialog";
 import { LoginRedirect } from "../../components/LoginRedirect";
 import { MobileScreen, ShareBottomBar } from "../../components/ShareBottomBar";
-import { useSharePageData } from "./hooks";
+import { usePlayer, useSharePageData, useUnlockedAudio } from "./hooks";
 import { ListenScreen } from "./ListenScreen";
 import { OverviewScreen } from "./OverviewScreen";
 import { useOnboardingScreen } from "../../components/OnboardingDialog";
@@ -27,9 +27,7 @@ export const SharePage: FC = () => {
   const spotifyAccessToken = globalState.spotify.accessToken;
 
   const [trackIndex, setTrackIndex] = useState<number>(0);
-  const [playing, setPlayling] = useState(false);
   const [done, setDone] = useState(false);
-  const audioPlayer = useRef<HTMLAudioElement>(null);
   const [activeMobileScreen, setActiveMobileScreen] = useState<MobileScreen>(MobileScreen.Listen);
 
   const {
@@ -43,20 +41,9 @@ export const SharePage: FC = () => {
   const currentTrack = tracks && tracks[trackIndex];
   const nextTrack = tracks && tracks[trackIndex + 1];
 
+  useUnlockedAudio()
 
-  /** 
-   * effects
-   */
-
-  useEffect(() => {
-    if (audioPlayer && audioPlayer.current) {
-      if (playing) {
-        audioPlayer.current.play();
-      } else {
-        audioPlayer.current.pause();
-      }
-    }
-  }, [trackIndex, playing]);
+  const { togglePlayback, playing, setPlayling, audioPlayerRef } = usePlayer(trackIndex);
 
   useOnboardingScreen();
 
@@ -73,16 +60,6 @@ export const SharePage: FC = () => {
 
   const onCardLeftScreen = async (myIdentifier: string) => {
     setTrackIndex(trackIndex + 1);
-  };
-
-  const togglePlayback = () => {
-    if (audioPlayer && audioPlayer.current) {
-      if (audioPlayer.current.paused) {
-        setPlayling(true);
-      } else {
-        setPlayling(false);
-      }
-    }
   };
 
   function likeTrack(libraryUserId: string, track: PumpkinTrack) {
@@ -107,7 +84,7 @@ export const SharePage: FC = () => {
 
   const onDelete = (tracks: PumpkinTrack[]) => removeLikedTracks(shareId, tracks);
 
-  const onCreatePlaylist = async (playlistName: string) => {
+  const onCreatePlaylist = useCallback(async (playlistName: string) => {
     if (spotifyAccessToken && userId && libraryUser) {
       const success = await createPlaylist(
         userId,
@@ -129,9 +106,9 @@ export const SharePage: FC = () => {
         "Playlist could not be created. Spotify token or user ID not available."
       );
     }
-  };
+  }, [globalState.pumpkin.likes, libraryUser, shareId, spotifyAccessToken, userId]);
 
-  const onButtonDone = async (closable?: boolean) => {
+  const onButtonDone = useCallback(async (closable?: boolean) => {
     const playlistName = await CustomDialog(<CreatePlaylistDialogContent />, {
       title: "Create Playlist",
       showCloseIcon: closable || true,
@@ -139,7 +116,7 @@ export const SharePage: FC = () => {
     if (playlistName && typeof playlistName === "string") {
       onCreatePlaylist(playlistName);
     }
-  };
+  }, [onCreatePlaylist]);
 
   const transitions = useTransition(activeMobileScreen, null, {
     from: { opacity: 0, transform: `translate3d(${activeMobileScreen === MobileScreen.Listen ? -400 : 400}px, 0, 0)` },
@@ -191,8 +168,7 @@ export const SharePage: FC = () => {
    */
 
   return (
-    <Box
-      display="flex"
+    <Flex
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
@@ -247,7 +223,7 @@ export const SharePage: FC = () => {
             </Box>
             <audio
               src={currentTrack.previewUrl as string}
-              ref={audioPlayer}
+              ref={audioPlayerRef}
               onEnded={() => setPlayling(false)}
             />
             <ShareBottomBar
@@ -258,15 +234,6 @@ export const SharePage: FC = () => {
           </Flex>
         )}
       </Loading>
-    </Box>
+    </Flex>
   );
 };
-
-
-
-
-
-
-
-
-
