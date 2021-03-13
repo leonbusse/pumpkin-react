@@ -8,6 +8,7 @@ import { SwipeCard } from "../../components/SwipeCard";
 import { SongSwiper } from "../../components/SongSwiper";
 import { HelpIcon } from "../../components/OnboardingDialog";
 import { Button } from "../../components/Button";
+import "./test.css";
 
 
 interface ListenScreenProps {
@@ -23,19 +24,17 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
     const { libraryUser, currentTrack, onSwipe, onCardLeftScreen, nextTrack } = props;
     const theme = useTheme();
 
-
     const swiperRef = useRef<any>();
-    const [blurNext, setBlurNext] = useState(false);
-    const isRunningOnMobileFirefox = useMemo(() => isMobileFirefox(), []);
 
+    // useEffect(() => {
+    //     console.log("trigger effect")
+    //     onCardEnter();
+    // }, [nextTrack]);
 
-    useEffect(() => {
-        setBlurNext(true);
-        setTimeout(() => {
-            setBlurNext(false);
-        }, 1);
-    }, [nextTrack]);
-
+    const onCardLeftScreenInner = (myIdentifier: string) => {
+        onCardEnter()
+        onCardLeftScreen(myIdentifier)
+    }
 
     return (
         <Flex
@@ -86,16 +85,16 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
                     <SongSwiper
                         track={currentTrack}
                         onSwipe={onSwipe}
-                        onCardLeftScreen={onCardLeftScreen}
+                        onCardLeftScreen={onCardLeftScreenInner}
                         swiperRef={swiperRef}
                     />
-                    <Blur blur={!isRunningOnMobileFirefox && blurNext} zIndex="1" />
+                    <Blur id="blur" zIndex="1" />
                     {nextTrack && (
                         <>
                             <Box position="absolute" top="0" zIndex="-2">
                                 <SwipeCard track={nextTrack} />
                             </Box>
-                            <Blur blur={true} zIndex="-1" />
+                            <Blur zIndex="-1" blur />
                         </>
                     )}
                 </Box>
@@ -122,22 +121,26 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
 }
 
 
-const Blur: FC<{ blur: boolean, zIndex?: string }> = (props) => {
-    const { blur, zIndex } = props;
+const Blur: FC<{ blur?: boolean, zIndex?: string, id?: string }> = (props) => {
+    const { blur, id, zIndex } = props;
     console.log("zIndex is ", zIndex)
     return <Box
         pointerEvents="none"
         zIndex={zIndex}
+        id={id}
         position="absolute"
         top="0"
         width="100%"
         height="100%"
         borderRadius="10px"
-        transition={blur ? "" : "background .25s ease-in-out"}
-        background={blur ? "#00000088" : "translucent"} />
+        background={blur ? "#00000088" : "trasparent"} />
 }
 
-function isMobileFirefox(): boolean {
-    return navigator.userAgent.includes("Firefox") &&
-        (navigator.userAgent.includes("Mobile") || navigator.userAgent.includes("Tablet"))
+function onCardEnter() {
+    console.log("enter anim");
+    const anim = document.getElementById("blur")!!.animate({
+        transform: ["translate(0px)", "translate(0px)"],
+        background: ["#00000088", "#00000000"]
+    }, 500);
+    anim.play();
 }
