@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useRef } from "react";
 import { Box, Flex, Heading, Spacer, Text, useTheme } from "@chakra-ui/react";
 import {
     PumpkinTrack,
