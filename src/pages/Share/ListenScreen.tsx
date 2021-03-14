@@ -64,7 +64,6 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
       </Text>
       <Spacer />
       <Flex
-        as="section"
         flexDirection="column"
         justifyContent="start"
         alignItems="center"

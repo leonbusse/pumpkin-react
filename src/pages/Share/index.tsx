@@ -146,7 +146,10 @@ export const SharePage: FC = () => {
         activeMobileScreen === MobileScreen.Listen ? -400 : 400
       }px, 0, 0)`,
     },
-    enter: { opacity: 1, transform: `translate3d(0vw, 0, 0)` },
+    enter: {
+      opacity: 1,
+      transform: `translate3d(0vw, 0, 0)`,
+    },
     leave: {
       opacity: 0,
       transform: `translate3d(${
@@ -230,16 +233,7 @@ export const SharePage: FC = () => {
               position="relative"
             >
               {transitions.map(({ item, key, props }) => (
-                <animated.div
-                  style={{
-                    ...props,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                  }}
-                >
+                <ScreenAnimationContainer animProps={props}>
                   {item === MobileScreen.Listen ? (
                     <ListenScreen
                       libraryUser={libraryUser}
@@ -255,7 +249,7 @@ export const SharePage: FC = () => {
                       likes={globalState.pumpkin.likes[shareId]}
                     />
                   )}
-                </animated.div>
+                </ScreenAnimationContainer>
               ))}
             </Box>
             <audio
@@ -273,5 +267,20 @@ export const SharePage: FC = () => {
         )}
       </Loading>
     </Flex>
+  );
+};
+
+const ScreenAnimationContainer: FC<{ animProps: any }> = (props) => {
+  return (
+    <animated.div
+      style={{
+        ...props.animProps,
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+      }}
+    >
+      {props.children}
+    </animated.div>
   );
 };
