@@ -66,7 +66,6 @@ export const SharePage: FC = () => {
     const likes = globalState.pumpkin.likes;
     const previousLikes = likes[libraryUserId]?.filter(t => t.id !== track.id) || [];
     const newLikes = { ...likes, [libraryUserId]: [...previousLikes, track] };
-    console.log("updated likes:", newLikes);
     globalSetters.setPumpkinState({
       likes: newLikes,
     });
@@ -76,7 +75,6 @@ export const SharePage: FC = () => {
     const likes = globalState.pumpkin.likes;
     const previousLikes = likes[libraryUserId] || [];
     const newLikes = { ...likes, [libraryUserId]: previousLikes.filter(t => !tracks.includes(t)) };
-    console.log("updated likes:", newLikes);
     globalSetters.setPumpkinState({
       likes: newLikes,
     });
@@ -130,7 +128,6 @@ export const SharePage: FC = () => {
    */
 
   if (window.location.search.includes("action=createPlaylist")) {
-    console.log("window.location.search:", window.location.search)
     const afterPlaylistSplit = window.location.search.split("playlistName=", 2)[1] || "";
     const playlistName = decodeURIComponent(afterPlaylistSplit.split("=")[0] || "");
     (async () => { onCreatePlaylist(playlistName) })()

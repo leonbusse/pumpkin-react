@@ -55,14 +55,14 @@ export const globalSetters = {
       "spotifyUser",
       JSON.stringify(globalState.spotify.user)
     );
-    console.log("setSpotifyState");
+    // console.log("setSpotifyState");
     document.dispatchEvent(new Event("StateUpdate"));
   },
   setPumpkinState: (s: Partial<PumpkinState>) => {
     globalState.pumpkin = { ...globalState.pumpkin, ...s };
 
     localStorage.setItem("likes", JSON.stringify(globalState.pumpkin.likes));
-    console.log("setPumpkinState");
+    // console.log("setPumpkinState");
     document.dispatchEvent(new Event("StateUpdate"));
   },
 };

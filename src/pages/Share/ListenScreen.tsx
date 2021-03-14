@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useRef, useState } from "react";
 import { Box, Flex, Heading, Spacer, Text, useTheme } from "@chakra-ui/react";
 import {
     PumpkinTrack,
@@ -7,9 +7,8 @@ import {
 import { SwipeCard } from "../../components/SwipeCard";
 import { HelpIcon } from "../../components/OnboardingDialog";
 import { Button } from "../../components/Button";
-import "./test.css";
-import { SongSwiper2 } from "../../components/SongSwiper2";
-import { animated, interpolate, useSpring, useTransition } from "react-spring";
+import { SongSwiper } from "../../components/SongSwiper";
+import { FadeOut } from "../../components/animation/FadeOut";
 
 
 interface ListenScreenProps {
@@ -24,8 +23,13 @@ interface ListenScreenProps {
 export const ListenScreen: FC<ListenScreenProps> = (props) => {
     const { libraryUser, currentTrack, onSwipe, onCardLeftScreen, nextTrack } = props;
     const theme = useTheme();
-
+    const [isInitialCardSinceMount, setInitialCardSinceMount] = useState(true);
     const swiperRef = useRef<any>()
+
+    const onSwipeInner = (direction: string) => {
+        setInitialCardSinceMount(false);
+        onSwipe(direction);
+    }
 
     return (
         <Flex
@@ -78,16 +82,18 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
                             <Box position="absolute" top="0">
                                 <SwipeCard track={nextTrack} />
                             </Box>
-                            <Blur />
+                            <CardBlur />
                         </>
                     )}
-                    <SongSwiper2
+                    <SongSwiper
                         track={currentTrack}
-                        onSwipe={onSwipe}
+                        onSwipe={onSwipeInner}
                         onCardLeftScreen={onCardLeftScreen}
                         swiperRef={swiperRef}
                     />
-                    <FadeOutBlur key={currentTrack.id} />
+                    <FadeOut disabled={isInitialCardSinceMount} >
+                        <CardBlur />
+                    </FadeOut>
                 </Box>
             </Flex>
             <Spacer />
@@ -112,7 +118,7 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
 }
 
 
-const Blur: FC = (props) => {
+const CardBlur: FC = (props) => {
     return <Box
         pointerEvents="none"
         position="absolute"
@@ -121,29 +127,4 @@ const Blur: FC = (props) => {
         height="100%"
         borderRadius="10px"
         background="#00000088" />
-}
-
-const FadeOutBlur: FC = (props) => {
-    const fadeOutTransition = useFadeOut();
-    return <>
-        {fadeOutTransition.map(({ item, props, key }) => (
-            <animated.div
-                key={key}
-                style={{ ...props }}
-            >
-                <Blur />
-            </animated.div>
-        ))}
-    </>
-}
-
-
-function useFadeOut() {
-    const fadeOutTransition = useTransition(0, i => i, {
-        from: { opacity: 1 },
-        enter: { opacity: 0 },
-        leave: { opacity: 0 },
-        config: { tension: 220, friction: 120 },
-    });
-    return fadeOutTransition;
 }

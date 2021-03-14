@@ -1,9 +1,0 @@
-@keyframes spin1 { 100% { transform:rotate(360deg); } }
-@keyframes spin2 { 100% { transform:rotate(-360deg); } }
-@keyframes enter { 
-    0% { background-color: rgba(0,0,0,.5);
-        transform:rotate(100deg) }
-    100% { background-color:rgba(0,0,0,0);
-        transform:rotate(90deg) } 
-}
-@keyframes idle { 100% {} }

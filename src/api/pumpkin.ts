@@ -4,16 +4,16 @@ const pumpkinEndpoint = process.env.REACT_APP_PUMPKIN_ENDPOINT;
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export async function ping() {
-  console.log("ping...");
+  // console.log("ping...");
   return fetch(`${pumpkinEndpoint}api/v1/ping`)
     .then((response) => response.text())
-    .then((data) => console.log("response: " + data));
+  // .then((data) => console.log("response: " + data));
 }
 
 export async function createShareLink(
   spotifyAccessToken: string
 ): Promise<string | null> {
-  console.log("createShareLink...");
+  // console.log("createShareLink...");
   return redirectOnUnauthorized(async () => {
     const response = await fetch(`${pumpkinEndpoint}api/v1/import`, {
       method: "POST",
@@ -33,7 +33,7 @@ export async function fetchTracks(
   offset: number,
   limit: number
 ): Promise<PumpkinTrack[] | null> {
-  console.log("fetchTracks...");
+  // console.log("fetchTracks...");
   return redirectOnUnauthorized(async () => {
     const url = `${pumpkinEndpoint}api/v1/tracks/${shareId}?offset=${offset}&limit=${limit}`;
 
@@ -51,7 +51,7 @@ export async function fetchTracks(
 export async function fetchUserByShareId(
   shareId: string
 ): Promise<PumpkinUser> {
-  console.log(`fetchUserByShareId: ${shareId}...`);
+  // console.log(`fetchUserByShareId: ${shareId}...`);
   return redirectOnUnauthorized(async () => {
     const url = `${pumpkinEndpoint}api/v1/share/user/${shareId}`;
 
@@ -73,7 +73,7 @@ export async function createPlaylist(
   trackIds: string[],
   spotifyAccessToken: string
 ): Promise<string | null> {
-  console.log("createPlaylist...");
+  // console.log("createPlaylist...");
   return redirectOnUnauthorized(async () => {
     const response = await fetch(`${pumpkinEndpoint}api/v1/create-playlist`, {
       method: "POST",

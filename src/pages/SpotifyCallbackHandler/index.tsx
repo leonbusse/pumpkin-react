@@ -4,8 +4,7 @@ import { fetchLoggedInUser } from "../../api/spotify";
 import { globalSetters, GlobalStateContext, SpotifyState } from "../../state";
 
 export const SpotifyCallbackHandler: FC = () => {
-  console.log("handle Spotify login callback...");
-  console.log("    url:  " + window.location.href);
+  // console.log("handle Spotify login callback...");
   const { setSpotifyState } = globalSetters;
   const spotifyState: SpotifyState = useContext(GlobalStateContext).spotify;
   const spotifyAccessToken = window.location.hash
@@ -25,7 +24,7 @@ export const SpotifyCallbackHandler: FC = () => {
     });
     setSpotifyState({ accessToken: spotifyAccessToken });
     const d = destination || "/";
-    console.log("received new access token, redirecting to " + d);
+    // console.log("received new access token, redirecting to " + d);
     return <Redirect to={d} />;
   }
   if (!spotifyState.accessToken) {

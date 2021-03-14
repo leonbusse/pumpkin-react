@@ -63,7 +63,6 @@ const LikesList: FC<LikesListProps> = (props) => {
   );
 
   const onDeleteButton = useCallback(() => {
-    console.log("onDelete " + selected.map(t => t.name).join(", "));
     onDelete(selected);
     setSelected([]);
   }, [selected, onDelete]);

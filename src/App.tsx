@@ -25,7 +25,6 @@ class App extends Component {
   hasMounted = false;
 
   stateUpdateListener = (e: any) => {
-    console.log("StateUpdate", e)
     if (this.hasMounted) {
       this.forceUpdate();
     }

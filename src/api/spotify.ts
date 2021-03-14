@@ -18,14 +18,12 @@ export function getSpotifyLoginUrl(destination?: string | undefined) {
   const url = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${encodeURIComponent(
     spotifyScopes.join(" ")
   )}${state ? `&state=${state}` : ""}`;
-  console.log(url);
   return url;
 }
 
 export async function fetchLoggedInUser(
   accessToken: string
 ): Promise<PumpkinUser | null> {
-  console.log("fetch logged in Spotify user...");
   return redirectOnUnauthorized(async () => {
     const url = "https://api.spotify.com/v1/me";
 

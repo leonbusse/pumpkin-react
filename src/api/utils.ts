@@ -1,10 +1,9 @@
 import { getSpotifyLoginUrl } from "./spotify";
 
-export class UnauthorizedError extends Error {}
+export class UnauthorizedError extends Error { }
 
 export async function parse(response: Response): Promise<any> {
   const data = await response.json();
-  console.log("response: ", data);
   if (data.error) {
     const errorString = JSON.stringify(data.error);
     if (data.error.statusCode === 401 || data.error.statusCode === "401") {
