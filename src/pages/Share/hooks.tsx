@@ -118,7 +118,7 @@ export function useUnlockedAudio() {
 
 function unlockAudio() {
     const sound = new Audio("https://odattachmentmdr-a.akamaihd.net/mp4audiomobil/e/digas-ee50cbdf-9279-4bde-8f78-48ab89a0513a-0a15de5e5053_ee.mp3");
-    sound.play();
+    sound.play().catch(() => { });
     sound.pause();
     sound.currentTime = 0;
     document.body.removeEventListener('click', unlockAudio)
