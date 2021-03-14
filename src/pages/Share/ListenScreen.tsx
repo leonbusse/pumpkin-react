@@ -5,7 +5,7 @@ import { SwipeCard } from "../../components/SwipeCard";
 import { HelpIcon } from "../../components/OnboardingDialog";
 import { Button } from "../../components/Button";
 import { SongSwiper } from "../../components/SongSwiper";
-import { FadeOut } from "../../components/animation/FadeOut";
+import { FadeOut } from "../../components/animation/fade";
 
 interface ListenScreenProps {
   libraryUser: PumpkinUser;
