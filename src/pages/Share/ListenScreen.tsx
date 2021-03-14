@@ -1,4 +1,4 @@
-import React, { FC, useRef } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Box, Flex, Heading, Spacer, Text, useTheme } from "@chakra-ui/react";
 import {
     PumpkinTrack,
@@ -9,6 +9,7 @@ import { HelpIcon } from "../../components/OnboardingDialog";
 import { Button } from "../../components/Button";
 import "./test.css";
 import { SongSwiper2 } from "../../components/SongSwiper2";
+import { animated, interpolate, useSpring, useTransition } from "react-spring";
 
 
 interface ListenScreenProps {
@@ -32,7 +33,7 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
     // }, [nextTrack]);
 
     const onCardLeftScreenInner = (myIdentifier: string) => {
-        onCardEnter()
+        // onCardEnter()
         onCardLeftScreen(myIdentifier)
     }
 
@@ -81,23 +82,22 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
                 alignItems="center"
                 width="100%"
             >
-                <Box position="relative" >
+                <Box position="relative" key={currentTrack.id}>
+                    {nextTrack && (
+                        <>
+                            <Box position="absolute" top="0">
+                                <SwipeCard track={nextTrack} />
+                            </Box>
+                            <Blur />
+                        </>
+                    )}
                     <SongSwiper2
-                        key={currentTrack.id}
                         track={currentTrack}
                         onSwipe={onSwipe}
                         onCardLeftScreen={onCardLeftScreenInner}
                         swiperRef={swiperRef}
                     />
-                    <Blur id="blur" zIndex="1" />
-                    {nextTrack && (
-                        <>
-                            <Box position="absolute" top="0" zIndex="-2">
-                                <SwipeCard track={nextTrack} />
-                            </Box>
-                            <Blur zIndex="-1" blur />
-                        </>
-                    )}
+                    <FadeOutBlur key={currentTrack.id} />
                 </Box>
             </Flex>
             <Spacer />
@@ -122,26 +122,48 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
 }
 
 
-const Blur: FC<{ blur?: boolean, zIndex?: string, id?: string }> = (props) => {
-    const { blur, id, zIndex } = props;
-    console.log("zIndex is ", zIndex)
+const Blur: FC = (props) => {
     return <Box
         pointerEvents="none"
-        zIndex={zIndex}
-        id={id}
         position="absolute"
         top="0"
         width="100%"
         height="100%"
         borderRadius="10px"
-        background={blur ? "#00000088" : "trasparent"} />
+        background="#00000088" />
 }
 
-function onCardEnter() {
-    console.log("enter anim");
-    const anim = document.getElementById("blur")!!.animate({
-        transform: ["translate(0px)", "translate(0px)"],
-        background: ["#00000088", "#00000000"]
-    }, 500);
-    anim.play();
+const FadeOutBlur: FC = (props) => {
+    const fadeOutTransition = useFadeOut();
+    return <>
+        {fadeOutTransition.map(({ item, props, key }) => (
+            <animated.div
+                key={key}
+                style={{ ...props }}
+            >
+                <Blur />
+            </animated.div>
+        ))}
+    </>
 }
+
+
+function useFadeOut() {
+    const fadeOutTransition = useTransition(0, i => i, {
+        from: { opacity: 1 },
+        enter: { opacity: 0 },
+        leave: { opacity: 0 },
+        config: { tension: 220, friction: 120 },
+    });
+    return fadeOutTransition;
+}
+
+
+// function onCardEnter() {
+    // console.log("enter anim");
+    // const anim = document.getElementById("blur")!!.animate({
+    //     transform: ["translate(0px)", "translate(0px)"],
+    //     background: ["#00000088", "#00000000"]
+    // }, 500);
+    // anim.play();
+// }

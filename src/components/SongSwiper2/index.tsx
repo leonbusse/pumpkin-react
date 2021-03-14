@@ -1,4 +1,4 @@
-import React, { FC, RefObject } from "react";
+import React, { FC, RefObject, useCallback } from "react";
 import { PumpkinTrack } from "../../api/pumpkin";
 import { SwipeCard } from "../SwipeCard";
 
@@ -15,6 +15,31 @@ interface SongSwiper2Props {
 export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
     const { onSwipe, onCardLeftScreen, track } = props;
 
+    const onGone = useCallback((dir: number) => {
+        onSwipe(dir === -1 ? "left" : "right");
+        setTimeout(() => {
+            onCardLeftScreen(track.id);
+        }, 500);
+    }, [onCardLeftScreen, onSwipe, track.id]);
+
+    const { bind, x, scale, rot } = useSwipe(onGone);
+
+
+    return <animated.div
+        {...bind()}
+        style={{
+            touchAction: "none",
+            // @ts-ignore
+            transform: interpolate([x, scale, rot], (x, s, r) => `translate3d(${x}px,0,0) scale(${s}) rotate(${r}deg)`)
+        }}
+    >
+        <SwipeCard track={track} />
+    </animated.div>
+};
+
+
+function useSwipe(onGone: (dir: number) => void) {
+
     const [{ x, scale, rot }, set] = useSpring(() => ({ x: 0, scale: 1, rot: 0 }))
     const bind = useGesture({
         onDrag: ({ down, direction: [xDir], velocity, movement: [xOffset] }) => {
@@ -27,19 +52,10 @@ export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
             const scale = down ? 1.1 : 1;
             set({ x: targetX, scale, rot, config: { friction: 50, tension: down ? 800 : isGone ? 200 : 500 } });
             if (isGone) {
-                onSwipe(dir === -1 ? "left" : "right");
-                setTimeout(() => {
-                    onCardLeftScreen(track.id);
-                }, 500);
+                onGone(dir);
             }
         },
         onPointerDown: ({ event, ...sharedState }) => console.log('pointer down', event),
     })
-    return <animated.div
-        {...bind()}
-        // @ts-ignore
-        style={{ touchAction: "none", transform: interpolate([x, scale, rot], (x, s, r) => `translate3d(${x}px,0,0) scale(${s}) rotate(${r}deg)`) }}
-    >
-        <SwipeCard track={track} />
-    </animated.div>
-};
+    return { bind, x, scale, rot };
+}
