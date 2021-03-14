@@ -5,10 +5,10 @@ import {
     PumpkinUser,
 } from "../../api/pumpkin";
 import { SwipeCard } from "../../components/SwipeCard";
-import { SongSwiper } from "../../components/SongSwiper";
 import { HelpIcon } from "../../components/OnboardingDialog";
 import { Button } from "../../components/Button";
 import "./test.css";
+import { SongSwiper2 } from "../../components/SongSwiper2";
 
 
 interface ListenScreenProps {
@@ -82,7 +82,8 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
                 width="100%"
             >
                 <Box position="relative" >
-                    <SongSwiper
+                    <SongSwiper2
+                        key={currentTrack.id}
                         track={currentTrack}
                         onSwipe={onSwipe}
                         onCardLeftScreen={onCardLeftScreenInner}
