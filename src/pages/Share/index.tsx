@@ -12,7 +12,7 @@ import { usePlayer, useSharePageData, useUnlockedAudio } from "./hooks";
 import { ListenScreen } from "./ListenScreen";
 import { OverviewScreen } from "./OverviewScreen";
 import { useOnboardingScreen } from "../../components/OnboardingDialog";
-import { animated, useTransition } from "react-spring";
+import { ScreenSwitcher } from "./ScreenSwitcher";
 
 interface SharePagePathParams {
   id: string;
@@ -139,25 +139,6 @@ export const SharePage: FC = () => {
     [onCreatePlaylist]
   );
 
-  const transitions = useTransition(activeMobileScreen, null, {
-    from: {
-      opacity: 0,
-      transform: `translate3d(${
-        activeMobileScreen === MobileScreen.Listen ? -400 : 400
-      }px, 0, 0)`,
-    },
-    enter: {
-      opacity: 1,
-      transform: `translate3d(0vw, 0, 0)`,
-    },
-    leave: {
-      opacity: 0,
-      transform: `translate3d(${
-        activeMobileScreen === MobileScreen.Listen ? 400 : -400
-      }px, 0, 0)`,
-    },
-  });
-
   /**
    * early returns
    */
@@ -232,25 +213,22 @@ export const SharePage: FC = () => {
               maxHeight="calc(100vh - 5em)"
               position="relative"
             >
-              {transitions.map(({ item, key, props }) => (
-                <ScreenAnimationContainer animProps={props}>
-                  {item === MobileScreen.Listen ? (
-                    <ListenScreen
-                      libraryUser={libraryUser}
-                      currentTrack={currentTrack}
-                      onSwipe={onSwipe}
-                      onCardLeftScreen={onCardLeftScreen}
-                      nextTrack={nextTrack}
-                    />
-                  ) : (
-                    <OverviewScreen
-                      onDone={onButtonDone}
-                      onDelete={onDelete}
-                      likes={globalState.pumpkin.likes[shareId]}
-                    />
-                  )}
-                </ScreenAnimationContainer>
-              ))}
+              <ScreenSwitcher
+                active={activeMobileScreen === MobileScreen.Listen ? 0 : 1}
+              >
+                <ListenScreen
+                  libraryUser={libraryUser}
+                  currentTrack={currentTrack}
+                  onSwipe={onSwipe}
+                  onCardLeftScreen={onCardLeftScreen}
+                  nextTrack={nextTrack}
+                />
+                <OverviewScreen
+                  onDone={onButtonDone}
+                  onDelete={onDelete}
+                  likes={globalState.pumpkin.likes[shareId]}
+                />
+              </ScreenSwitcher>
             </Box>
             <audio
               src={currentTrack.previewUrl as string}
@@ -267,20 +245,5 @@ export const SharePage: FC = () => {
         )}
       </Loading>
     </Flex>
-  );
-};
-
-const ScreenAnimationContainer: FC<{ animProps: any }> = (props) => {
-  return (
-    <animated.div
-      style={{
-        ...props.animProps,
-        width: "100%",
-        height: "100%",
-        position: "absolute",
-      }}
-    >
-      {props.children}
-    </animated.div>
   );
 };
