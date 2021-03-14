@@ -5,8 +5,9 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export async function ping() {
   // console.log("ping...");
-  return fetch(`${pumpkinEndpoint}api/v1/ping`)
-    .then((response) => response.text())
+  return fetch(`${pumpkinEndpoint}api/v1/ping`).then((response) =>
+    response.text()
+  );
   // .then((data) => console.log("response: " + data));
 }
 

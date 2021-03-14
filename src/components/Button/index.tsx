@@ -5,7 +5,7 @@ export const Button = (props: any) => {
   const hoverCss = {
     background: disabled ? "#ddd" : "black",
     color: disabled ? "#666" : "white",
-    borderColor: disabled ? "#666" : "black"
+    borderColor: disabled ? "#666" : "black",
   };
   return (
     <ChakraButton

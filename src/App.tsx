@@ -19,9 +19,7 @@ const colors = {
 };
 const theme = extendTheme({ colors });
 
-
 class App extends Component {
-
   hasMounted = false;
 
   stateUpdateListener = (e: any) => {
@@ -52,9 +50,7 @@ class App extends Component {
   }
 }
 
-
 const Routing: FC = () => {
-
   // const location = window.location;
   // const transitions = useTransition(location, (location) => location.pathname, {
   //   from: { opacity: 0 },

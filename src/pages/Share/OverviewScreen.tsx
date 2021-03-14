@@ -1,13 +1,9 @@
 import React, { FC, useState, useCallback } from "react";
 import { Box, Flex, Heading } from "@chakra-ui/react";
-import {
-  PumpkinTrack,
-} from "../../api/pumpkin";
+import { PumpkinTrack } from "../../api/pumpkin";
 import { Button } from "../../components/Button";
 import { DeleteButton } from "../../components/DeleteButton";
 import { TrackList } from "../../components/TrackList";
-
-
 
 interface OverviewScreenProps {
   likes: PumpkinTrack[];
@@ -25,20 +21,13 @@ export const OverviewScreen: FC<OverviewScreenProps> = (props) => {
       alignItems="center"
       width="100%"
       height="100%"
-      padding="2em 0 3em 0">
-
-      <Heading size="2xl" >Liked Tracks</Heading>
-      <LikesList
-        likes={likes}
-        onDelete={onDelete}
-        onDone={onDone} />
+      padding="2em 0 3em 0"
+    >
+      <Heading size="2xl">Liked Tracks</Heading>
+      <LikesList likes={likes} onDelete={onDelete} onDone={onDone} />
     </Flex>
   );
-}
-
-
-
-
+};
 
 interface LikesListProps {
   likes: PumpkinTrack[];
@@ -53,9 +42,8 @@ const LikesList: FC<LikesListProps> = (props) => {
   const onSelect = useCallback(
     (track: PumpkinTrack) => {
       if (selected.includes(track)) {
-        setSelected(selected.filter(t => t !== track));
-      }
-      else {
+        setSelected(selected.filter((t) => t !== track));
+      } else {
         setSelected([...selected, track]);
       }
     },
@@ -81,12 +69,16 @@ const LikesList: FC<LikesListProps> = (props) => {
           display: "inline-block",
           height: "6em",
           pointerEvents: "none",
-          background: "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))",
-          width: "100vw"
-        }} />
+          background:
+            "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))",
+          width: "100vw",
+        }}
+      />
       <Flex flexDirection="row">
         <Box width="4em" />
-        <Button disabled={!likes || likes.length === 0} onClick={onDone}>Add to my Spotify</Button>
+        <Button disabled={!likes || likes.length === 0} onClick={onDone}>
+          Add to my Spotify
+        </Button>
         <Box width="1em" />
         <DeleteButton
           opacity={selected.length > 0 ? "1" : "0"}
@@ -95,4 +87,4 @@ const LikesList: FC<LikesListProps> = (props) => {
       </Flex>
     </>
   );
-}
+};

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { getSpotifyLoginUrl } from "../../api/spotify";
 
-interface SpotifyLoginProps extends RouteComponentProps<{}> { }
+interface SpotifyLoginProps extends RouteComponentProps<{}> {}
 
 export const SpotifyLogin: FC<SpotifyLoginProps> = (props) => {
   const destination = getUrlDestination(props.location.search) || "/";
