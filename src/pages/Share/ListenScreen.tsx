@@ -25,17 +25,7 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
     const { libraryUser, currentTrack, onSwipe, onCardLeftScreen, nextTrack } = props;
     const theme = useTheme();
 
-    const swiperRef = useRef<any>();
-
-    // useEffect(() => {
-    //     console.log("trigger effect")
-    //     onCardEnter();
-    // }, [nextTrack]);
-
-    const onCardLeftScreenInner = (myIdentifier: string) => {
-        // onCardEnter()
-        onCardLeftScreen(myIdentifier)
-    }
+    const swiperRef = useRef<any>()
 
     return (
         <Flex
@@ -94,7 +84,7 @@ export const ListenScreen: FC<ListenScreenProps> = (props) => {
                     <SongSwiper2
                         track={currentTrack}
                         onSwipe={onSwipe}
-                        onCardLeftScreen={onCardLeftScreenInner}
+                        onCardLeftScreen={onCardLeftScreen}
                         swiperRef={swiperRef}
                     />
                     <FadeOutBlur key={currentTrack.id} />
@@ -157,13 +147,3 @@ function useFadeOut() {
     });
     return fadeOutTransition;
 }
-
-
-// function onCardEnter() {
-    // console.log("enter anim");
-    // const anim = document.getElementById("blur")!!.animate({
-    //     transform: ["translate(0px)", "translate(0px)"],
-    //     background: ["#00000088", "#00000000"]
-    // }, 500);
-    // anim.play();
-// }

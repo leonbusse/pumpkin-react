@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useCallback } from "react";
+import React, { FC, MutableRefObject, useCallback, useEffect } from "react";
 import { PumpkinTrack } from "../../api/pumpkin";
 import { SwipeCard } from "../SwipeCard";
 
@@ -10,10 +10,11 @@ interface SongSwiper2Props {
     track: PumpkinTrack;
     onSwipe: (direction: string) => void;
     onCardLeftScreen: (myIdentifier: string) => void;
-    swiperRef: RefObject<any>;
+    swiperRef: MutableRefObject<any>;
 }
+
 export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
-    const { onSwipe, onCardLeftScreen, track } = props;
+    const { onSwipe, onCardLeftScreen, track, swiperRef } = props;
 
     const onGone = useCallback((dir: number) => {
         onSwipe(dir === -1 ? "left" : "right");
@@ -22,8 +23,9 @@ export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
         }, 500);
     }, [onCardLeftScreen, onSwipe, track.id]);
 
-    const { bind, x, scale, rot } = useSwipe(onGone);
+    const { bind, x, scale, rot, swipe } = useSwipe(onGone);
 
+    useSwiperRefAssignment(swiperRef, swipe);
 
     return <animated.div
         {...bind()}
@@ -57,5 +59,22 @@ function useSwipe(onGone: (dir: number) => void) {
         },
         onPointerDown: ({ event, ...sharedState }) => console.log('pointer down', event),
     })
-    return { bind, x, scale, rot };
+
+    const swipe = (dir: number) => {
+        set({ x: (200 + window.innerWidth) * dir, scale: 1.1, rot: 10 * dir, config: { friction: 50, tension: 200 } });
+        onGone(dir);
+    }
+    return { bind, x, scale, rot, swipe };
+}
+
+function useSwiperRefAssignment(swiperRef: MutableRefObject<any>, swipe: (dir: number) => void) {
+    useEffect(() => {
+        const swiper = {
+            swipe: (dir: string) => {
+                console.log("swipe ", dir);
+                swipe(dir === "left" ? -1 : 1);
+            }
+        }
+        swiperRef.current = swiper
+    }, [swiperRef, swipe]);
 }
