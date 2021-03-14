@@ -15,7 +15,7 @@ interface SongSwiper2Props {
 export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
     const { onSwipe, onCardLeftScreen, track } = props;
 
-    const [{ x, scale }, set] = useSpring(() => ({ x: 0, scale: 1, from: { x: 0, scale: 1 } }))
+    const [{ x, scale, rot }, set] = useSpring(() => ({ x: 0, scale: 1, rot: 0 }))
     const bind = useGesture({
         onDrag: ({ down, direction: [xDir], velocity, movement: [xOffset] }) => {
             console.log("onDrag, ", xOffset);
@@ -23,8 +23,9 @@ export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
             const isGone = !down && trigger;
             const dir = xDir < 0 ? -1 : 1;
             const targetX = isGone ? (200 + window.innerWidth) * dir : down ? xOffset : 0;
+            const rot = (down && xOffset * dir > 100) || isGone ? 10 * dir : 0;
             const scale = down ? 1.1 : 1;
-            set({ x: targetX, scale, config: { friction: 50, tension: down ? 800 : isGone ? 200 : 500 } });
+            set({ x: targetX, scale, rot, config: { friction: 50, tension: down ? 800 : isGone ? 200 : 500 } });
             if (isGone) {
                 onSwipe(dir === -1 ? "left" : "right");
                 setTimeout(() => {
@@ -37,7 +38,7 @@ export const SongSwiper2: FC<SongSwiper2Props> = (props) => {
     return <animated.div
         {...bind()}
         // @ts-ignore
-        style={{ touchAction: "none", transform: interpolate([x, scale], (x, s) => `translate3d(${x}px,0,0) scale(${s})`) }}
+        style={{ touchAction: "none", transform: interpolate([x, scale, rot], (x, s, r) => `translate3d(${x}px,0,0) scale(${s}) rotate(${r}deg)`) }}
     >
         <SwipeCard track={track} />
     </animated.div>
